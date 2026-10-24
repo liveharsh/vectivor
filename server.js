@@ -2,13 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const https = require('https');
+const masterEngine = require('./src/masterAnalysisEngine');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
 
 // Massive Stock, Crypto & Commodity Universe (India + US + Crypto)
 const STOCK_CATALOG = {
@@ -123,7 +124,20 @@ const STOCK_CATALOG = {
     // ==========================================
     'GOLD': { name: 'Gold Spot', symbol: 'GC=F', market: 'COMMODITY', currency: '$', basePrice: 2735.60, sector: 'Precious Metals' },
     'SILVER': { name: 'Silver Spot', symbol: 'SI=F', market: 'COMMODITY', currency: '$', basePrice: 33.80, sector: 'Precious & Industrial' },
-    'CRUDEOIL': { name: 'Brent Crude Oil', symbol: 'BZ=F', market: 'COMMODITY', currency: '$', basePrice: 74.20, sector: 'Global Energy' }
+    'CRUDEOIL': { name: 'Brent Crude Oil', symbol: 'BZ=F', market: 'COMMODITY', currency: '$', basePrice: 74.20, sector: 'Global Energy' },
+
+    // ==========================================
+    // 💱 FOREX & CURRENCY PAIRS
+    // ==========================================
+    'EURUSD': { name: 'EUR / USD Spot', symbol: 'EURUSD=X', market: 'FOREX', currency: '$', basePrice: 1.0820, sector: 'Major FX Pair' },
+    'GBPUSD': { name: 'GBP / USD Spot', symbol: 'GBPUSD=X', market: 'FOREX', currency: '$', basePrice: 1.2980, sector: 'Major FX Pair' },
+    'USDJPY': { name: 'USD / JPY Spot', symbol: 'JPY=X', market: 'FOREX', currency: '¥', basePrice: 152.40, sector: 'Major FX Pair' },
+
+    // ==========================================
+    // 🌐 GLOBAL MACRO BENCHMARKS
+    // ==========================================
+    'DXY': { name: 'US Dollar Index (DXY)', symbol: 'DX-Y.NYB', market: 'US', currency: '$', basePrice: 104.25, sector: 'Global Currency Reserve' },
+    'US10Y': { name: 'US 10-Year Bond Yield', symbol: '^TNX', market: 'US', currency: '%', basePrice: 4.24, sector: 'Sovereign Debt' }
 };
 
 function roundPrice(val, basePrice = 100) {
@@ -553,6 +567,15 @@ async function analyzeMarket(symbol) {
     else if (fearGreedScore < 25) fearGreedLabel = 'Extreme Fear (Panic Capitulation)';
     else if (fearGreedScore < 42) fearGreedLabel = 'Fear (Elevated Selling Pressure)';
 
+    // Master SMC & Quantitative Analytics
+    const structure = masterEngine.analyzeMarketStructure(candles);
+    const smc = masterEngine.analyzeSMC(candles, currentPrice);
+    const candlestickPattern = masterEngine.analyzeCandlestickPattern(candles);
+    const volumeProfile = masterEngine.analyzeVolumeAndProfile(candles);
+    const derivatives = masterEngine.analyzeDerivatives(symbol, meta, currentPrice, rsi, structure.trend);
+    const scenarios = masterEngine.generateTradingScenarios(currentPrice, structure, smc, candlestickPattern, volumeProfile, meta);
+    const masterHindi = masterEngine.generateHindiMasterclass(symbol, meta, currentPrice, structure, smc, candlestickPattern, volumeProfile, derivatives, scenarios);
+
     return {
         symbol,
         meta,
@@ -597,7 +620,16 @@ async function analyzeMarket(symbol) {
             score: fearGreedScore,
             label: fearGreedLabel
         },
-        chartData: candles.slice(-60)
+        chartData: candles.slice(-60),
+        masterAnalysis: {
+            structure,
+            smc,
+            candlestickPattern,
+            volumeProfile,
+            derivatives,
+            scenarios,
+            masterHindi
+        }
     };
 }
 
@@ -615,6 +647,24 @@ app.get('/api/analyze/:symbol', async (req, res) => {
     try {
         const analysis = await analyzeMarket(symbol);
         res.json(analysis);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/master-analysis/:symbol', async (req, res) => {
+    const symbol = (req.params.symbol || 'NIFTY50').toUpperCase();
+    try {
+        const analysis = await analyzeMarket(symbol);
+        res.json({
+            symbol: analysis.symbol,
+            meta: analysis.meta,
+            currentPrice: analysis.currentPrice,
+            isLive: analysis.isLive,
+            source: analysis.source,
+            timestamp: new Date().toISOString(),
+            ...analysis.masterAnalysis
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

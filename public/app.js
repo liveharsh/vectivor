@@ -83,6 +83,23 @@ function setupEventListeners() {
     const marketHoursBtn = document.getElementById('marketHoursBtn');
     const closeHoursModalBtn = document.getElementById('closeHoursModalBtn');
 
+    const masterModal = document.getElementById('masterModal');
+    const openMasterModalBtn = document.getElementById('openMasterModalBtn');
+    const closeMasterModalBtn = document.getElementById('closeMasterModalBtn');
+
+    if (openMasterModalBtn && masterModal) {
+        openMasterModalBtn.addEventListener('click', () => {
+            masterModal.style.display = 'flex';
+            loadMasterAnalysis(currentSymbol);
+        });
+    }
+
+    if (closeMasterModalBtn && masterModal) {
+        closeMasterModalBtn.addEventListener('click', () => {
+            masterModal.style.display = 'none';
+        });
+    }
+
     if (marketHoursBtn && marketHoursModal) {
         marketHoursBtn.addEventListener('click', () => {
             marketHoursModal.style.display = 'flex';
@@ -102,6 +119,22 @@ function setupEventListeners() {
         if (e.target === marketHoursModal) {
             marketHoursModal.style.display = 'none';
         }
+        if (e.target === masterModal) {
+            masterModal.style.display = 'none';
+        }
+    });
+
+    // Master Modal Tabs switching
+    document.querySelectorAll('.m-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.m-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.m-panel').forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            const targetId = btn.dataset.tab;
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) targetPanel.classList.add('active');
+        });
     });
 
     customStockForm.addEventListener('submit', handleCustomStockSubmit);
@@ -843,4 +876,203 @@ function initMarketClocks() {
 
     updateClocks();
     setInterval(updateClocks, 1000);
+}
+
+
+// ==============================================================================
+// MASTER PROFESSIONAL MARKET ANALYSIS AI RENDERER (SMC + MULTI-CONFLUENCE)
+// ==============================================================================
+async function loadMasterAnalysis(symbol) {
+    const symbolClean = (symbol || currentSymbol || 'NIFTY50').toUpperCase();
+    try {
+        const res = await fetch(`/api/master-analysis/${symbolClean}`);
+        if (!res.ok) throw new Error('Master analysis fetch failed');
+        const data = await res.json();
+        renderMasterAnalysis(data);
+    } catch (err) {
+        console.error('Failed to load Master Analysis:', err);
+    }
+}
+
+function renderMasterAnalysis(data) {
+    const currency = data.meta.currency || '₹';
+    const base = data.meta.basePrice || data.currentPrice;
+
+    // Header Meta
+    const headerSym = document.getElementById('mHeaderSymbol');
+    if (headerSym) headerSym.textContent = `${data.meta.name || data.symbol} (${currency}${formatNumber(data.currentPrice, base)})`;
+
+    // 1. Overview Panel
+    setElText('mOverviewName', `${data.meta.name || data.symbol} (${data.meta.sector || 'Equities'})`);
+    setElText('mOverviewPrice', `${currency}${formatNumber(data.currentPrice, base)}`);
+    setElText('mOverviewMarket', `${data.meta.market || 'IN'} Exchange Session`);
+    
+    const verEl = document.getElementById('mOverviewVerified');
+    if (verEl) {
+        verEl.textContent = data.isLive ? 'LIVE EXCHANGE FEED' : 'OFFICIAL CLOSE (LTP)';
+        verEl.className = `m-stat-val badge-tag ${data.isLive ? 'badge-bull' : 'badge-bear'}`;
+    }
+
+    setElText('mOverviewTrend', data.structure.trend);
+    setElText('mOverviewZone', data.structure.currentZone);
+    setElText('mOverviewAdx', data.volumeProfile.adxStrength);
+    setElText('mOverviewVerdict', data.masterHindi.section1_Overview.points[1] || 'ANALYZED');
+    setElText('mOverviewAtr', `${currency}${formatNumber(data.currentPrice * 0.012, base)}`);
+    setElText('mOverviewRvol', `${data.volumeProfile.rvol}x`);
+    setElText('mOverviewRvolStatus', data.volumeProfile.rvolStatus);
+    setElText('mOverviewFeed', data.source);
+    setElText('mOverviewIntegrityNote', data.masterHindi.section1_Overview.points[4] || 'Verified Institutional Feed.');
+
+    // 2. Price Action & Structure Panel
+    setElText('mCandlePattern', data.candlestickPattern.name);
+    setElText('mCandleBias', data.candlestickPattern.bias);
+    setElText('mCandleRel', data.candlestickPattern.reliability);
+    setElText('mCandleDesc', data.candlestickPattern.description);
+    setElText('mCandleTrap', `⚠️ Traps & False Signals: ${data.candlestickPattern.trap}`);
+
+    setElText('mSwingHigh', `${currency}${formatNumber(data.structure.lastHigh, base)}`);
+    setElText('mSwingLow', `${currency}${formatNumber(data.structure.lastLow, base)}`);
+    setElText('mBosStatus', data.structure.bos ? data.structure.bos.message : 'No Recent Structural Break (Consolidating)');
+    setElText('mChochStatus', data.structure.choch ? data.structure.choch.message : 'No Structural Inversion (CHoCH Intact)');
+    setElText('mStructureExplanation', data.masterHindi.section3_MarketStructure.educationalRule);
+
+    setElText('mRangeHigh', `${currency}${formatNumber(data.structure.rangeHigh, base)}`);
+    setElText('mEquilibrium', `${currency}${formatNumber(data.structure.equilibrium, base)}`);
+    setElText('mRangeLow', `${currency}${formatNumber(data.structure.rangeLow, base)}`);
+    setElText('mOteRange', `🎯 Optimal Trade Entry (OTE: 61.8% – 78.6% Golden Pocket): ${currency}${formatNumber(data.structure.ote.min, base)} – ${currency}${formatNumber(data.structure.ote.max, base)}`);
+
+    // 3. Smart Money Concepts (SMC) Panel
+    setElText('mBslLevel', `${currency}${formatNumber(data.smc.liquidity.bsl, base)} (Retail Buy-Stops Clustered Here)`);
+    setElText('mSslLevel', `${currency}${formatNumber(data.smc.liquidity.ssl, base)} (Retail Sell-Stops Trapped Here)`);
+    setElText('mEqualLevels', data.smc.liquidity.equalHighs.detected ? 'Equal Highs (EQH) Detected' : (data.smc.liquidity.equalLows.detected ? 'Equal Lows (EQL) Detected' : 'No Equal Liquidity Clusters'));
+    setElText('mSweepEvent', data.smc.liquidity.sweepEvent ? `${data.smc.liquidity.sweepEvent.type}: ${data.smc.liquidity.sweepEvent.action}` : 'No Recent Institutional Stop Hunt / Sweep Detected');
+
+    // Order Blocks
+    const obContainer = document.getElementById('mOrderBlocksList');
+    if (obContainer) {
+        if (data.smc.orderBlocks && data.smc.orderBlocks.length > 0) {
+            obContainer.innerHTML = data.smc.orderBlocks.map(ob => `
+                <div class="m-stat-row">
+                    <span class="m-stat-label">${ob.type}</span>
+                    <span class="m-stat-val ${ob.type.includes('BULLISH') ? 'text-green' : 'text-red'}">
+                        ${currency}${formatNumber(ob.bottom, base)} – ${currency}${formatNumber(ob.top, base)}
+                        <span class="badge-tag ${ob.status.includes('ACTIVE') ? 'badge-bull' : 'badge-purp'}" style="margin-left:6px;">${ob.status}</span>
+                    </span>
+                </div>
+            `).join('');
+        } else {
+            obContainer.innerHTML = '<p style="color:#94a3b8; font-size:0.85rem;">No fresh unmitigated order blocks in current price corridor.</p>';
+        }
+    }
+
+    // FVGs
+    const fvgContainer = document.getElementById('mFvgList');
+    if (fvgContainer) {
+        if (data.smc.fvgs && data.smc.fvgs.length > 0) {
+            fvgContainer.innerHTML = data.smc.fvgs.map(f => `
+                <div class="m-stat-row">
+                    <span class="m-stat-label">${f.type} (${f.candleDate})</span>
+                    <span class="m-stat-val">
+                        ${currency}${formatNumber(f.bottom, base)} – ${currency}${formatNumber(f.top, base)}
+                        <span class="badge-tag ${f.status.includes('UNMITIGATED') ? 'badge-bull' : 'badge-neu'}" style="margin-left:6px;">${f.status}</span>
+                    </span>
+                </div>
+            `).join('');
+        } else {
+            fvgContainer.innerHTML = '<p style="color:#94a3b8; font-size:0.85rem;">All recent price imbalances (FVGs) have been filled/mitigated.</p>';
+        }
+    }
+
+    // 4. Volume Profile & POC Panel
+    setElText('mPocVal', `${currency}${formatNumber(data.volumeProfile.poc, base)}`);
+    setElText('mVahVal', `${currency}${formatNumber(data.volumeProfile.vah, base)}`);
+    setElText('mValVal', `${currency}${formatNumber(data.volumeProfile.val, base)}`);
+    setElText('mVwapVal', `${currency}${formatNumber(data.volumeProfile.vwap, base)}`);
+    setElText('mVolumeProfileNote', data.volumeProfile.volumeProfileInterpretation);
+
+    setElText('mPcrVal', data.derivatives.pcr);
+    setElText('mPcrVerdict', data.derivatives.pcrVerdict);
+    setElText('mMaxCallOi', `${currency}${formatNumber(data.derivatives.maxCallOI, base)}`);
+    setElText('mMaxPutOi', `${currency}${formatNumber(data.derivatives.maxPutOI, base)}`);
+    setElText('mMaxPain', `${currency}${formatNumber(data.derivatives.maxPain, base)}`);
+
+    // 5. Roadmaps & Risk Rules Panel
+    const bull = data.scenarios.bullishPlan;
+    const bear = data.scenarios.bearishPlan;
+
+    setElText('mBullTrigger', bull.triggerCondition);
+    setElText('mBullEntry', `${currency}${bull.entryZone}`);
+    setElText('mBullSl', `${currency}${formatNumber(bull.stopLoss, base)}`);
+    setElText('mBullT1', `${currency}${formatNumber(bull.target1, base)}`);
+    setElText('mBullT2', `${currency}${formatNumber(bull.target2, base)}`);
+    setElText('mBullRr', bull.riskReward);
+    setElText('mBullInvalidation', `🚫 Invalidation Rule: ${bull.invalidation}`);
+
+    setElText('mBearTrigger', bear.triggerCondition);
+    setElText('mBearEntry', `${currency}${bear.entryZone}`);
+    setElText('mBearSl', `${currency}${formatNumber(bear.stopLoss, base)}`);
+    setElText('mBearT1', `${currency}${formatNumber(bear.target1, base)}`);
+    setElText('mBearT2', `${currency}${formatNumber(bear.target2, base)}`);
+    setElText('mBearRr', bear.riskReward);
+    setElText('mBearInvalidation', `🚫 Invalidation Rule: ${bear.invalidation}`);
+
+    const riskList = document.getElementById('mRiskRulesList');
+    if (riskList) {
+        riskList.innerHTML = data.scenarios.riskManagementRules.map(r => `<li>${r}</li>`).join('');
+    }
+
+    // 6. Hindi Classroom Panel
+    const classroom = document.getElementById('mHindiClassroomContent');
+    if (classroom && data.masterHindi) {
+        const h = data.masterHindi;
+        classroom.innerHTML = `
+            <div class="quote-highlight" style="margin-top:0; margin-bottom:18px;">
+                "${h.roleStatement}"
+            </div>
+
+            <h4>${h.section1_Overview.title}</h4>
+            <ul>
+                ${h.section1_Overview.points.map(p => `<li>${p}</li>`).join('')}
+            </ul>
+
+            <h4>${h.section2_PriceAction.title}</h4>
+            <p><b>पैटर्न:</b> ${h.section2_PriceAction.patternName} (${h.section2_PriceAction.bias} Bias)</p>
+            <p>${h.section2_PriceAction.explanation}</p>
+            <div class="formula-card">⚠️ ट्रैप चेतावनी: ${h.section2_PriceAction.falseSignalTrap}</div>
+            <p>${h.section2_PriceAction.technicalTakeaway}</p>
+
+            <h4>${h.section3_MarketStructure.title}</h4>
+            <p><b>ट्रेंड:</b> ${h.section3_MarketStructure.trend}</p>
+            <p><b>BOS (Break of Structure):</b> ${h.section3_MarketStructure.bosStatus}</p>
+            <p><b>CHoCH (Change of Character):</b> ${h.section3_MarketStructure.chochStatus}</p>
+            <div class="formula-card">💡 सिद्धांत: ${h.section3_MarketStructure.educationalRule}</div>
+
+            <h4>${h.section4_SMC.title}</h4>
+            <p><b>Buy-Side Liquidity (BSL):</b> ${h.section4_SMC.bslLevel}</p>
+            <p><b>Sell-Side Liquidity (SSL):</b> ${h.section4_SMC.sslLevel}</p>
+            <p><b>Order Blocks:</b> ${h.section4_SMC.orderBlockSummary}</p>
+            <p><b>FVG (Imbalances):</b> ${h.section4_SMC.fvgSummary}</p>
+            <div class="formula-card">${h.section4_SMC.premiumDiscountGuidance}</div>
+
+            <h4>${h.section5_VolumeAndDerivatives.title}</h4>
+            <p><b>Point of Control (POC):</b> ${h.section5_VolumeAndDerivatives.poc}</p>
+            <p><b>Anchored VWAP:</b> ${h.section5_VolumeAndDerivatives.vwap}</p>
+            <p><b>ADX Trend Strength:</b> ${h.section5_VolumeAndDerivatives.adx}</p>
+            <p><b>Derivatives / PCR:</b> ${h.section5_VolumeAndDerivatives.pcr} | ${h.section5_VolumeAndDerivatives.optionsOI}</p>
+            <div class="formula-card">🧠 वॉल्यूम सबक: ${h.section5_VolumeAndDerivatives.volumeLesson}</div>
+
+            <h4>${h.section7_RiskMastery.title}</h4>
+            <ul>
+                ${h.section7_RiskMastery.rules.map(r => `<li>${r}</li>`).join('')}
+            </ul>
+            <div class="quote-highlight">
+                "${h.section7_RiskMastery.goldenQuote}"
+            </div>
+        `;
+    }
+}
+
+function setElText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
 }

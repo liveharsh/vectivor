@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vectivor - Quantitative Market Trajectory & Direction Terminal</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="stylesheet" href="style.css?v=4.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -32,7 +33,7 @@
     <!-- Navigation Header -->
     <header class="app-header">
         <div class="logo-area">
-            <div class="logo-icon">▲</div>
+            <img src="logo.jpg" alt="Vectivor Logo" class="brand-logo-img">
             <div>
                 <h1>VECTIVOR</h1>
                 <p class="tagline">Quantitative Trajectory & Statistical Direction Terminal</p>
@@ -45,6 +46,7 @@
                 <span class="dot"></span>
                 <span id="headerLiveText">Live Session: Active</span>
             </div>
+            <button id="openMasterModalBtn" class="pill-btn master-ai-btn">🎓 Master AI Analysis (SMC & Multi-Confluence)</button>
             <button id="customAnalyzeBtn" class="pill-btn primary-btn">+ Analyze Custom Asset</button>
         </div>
     </header>
@@ -107,6 +109,7 @@
                         <button class="cat-tab" data-category="US">🇺🇸 US Market (40+)</button>
                         <button class="cat-tab crypto-highlight" data-category="CRYPTO">🪙 Crypto Coins (13+)</button>
                         <button class="cat-tab" data-category="COMMODITY">🥇 Commodities</button>
+                        <button class="cat-tab" data-category="FOREX">💱 Forex Pairs</button>
                     </div>
                 </div>
                 <div class="search-box">
@@ -451,6 +454,180 @@
         </div>
     </div>
 
+    <!-- Master Professional Market Analysis AI Modal -->
+    <div class="modal-overlay" id="masterModal" style="display:none;">
+        <div class="modal-content master-modal-content">
+            <div class="master-modal-header">
+                <h3><img src="logo.jpg" alt="Vectivor Logo" class="modal-logo-thumb"> Master Professional Market Analysis AI</h3>
+                <div class="master-header-meta">
+                    <span class="master-asset-badge" id="mHeaderSymbol">NIFTY50</span>
+                    <button class="close-modal-btn" id="closeMasterModalBtn">&times;</button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs Bar -->
+            <div class="master-tabs-bar" id="masterTabsBar">
+                <button class="m-tab-btn active" data-tab="tabOverview">🌐 1. Overview & Verification</button>
+                <button class="m-tab-btn" data-tab="tabStructure">🧱 2. Price Action & Structure</button>
+                <button class="m-tab-btn" data-tab="tabSMC">🏦 3. Smart Money Concepts (SMC)</button>
+                <button class="m-tab-btn" data-tab="tabVolume">📊 4. Volume Profile & POC</button>
+                <button class="m-tab-btn" data-tab="tabRoadmaps">🎯 5. Roadmaps & Risk Rules</button>
+                <button class="m-tab-btn" data-tab="tabClassroom">🇮🇳 6. हिंदी AI Masterclass</button>
+            </div>
+
+            <div class="master-body-scroll">
+                <!-- Panel 1: Overview & Verification -->
+                <div class="m-panel active" id="tabOverview">
+                    <div class="master-grid-3">
+                        <div class="m-card">
+                            <div class="m-card-title">📌 Asset & Price Context</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Instrument</span><span class="m-stat-val" id="mOverviewName">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Current Price</span><span class="m-stat-val text-green" id="mOverviewPrice">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Market Session</span><span class="m-stat-val" id="mOverviewMarket">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Data Verification</span><span class="m-stat-val badge-tag badge-bull" id="mOverviewVerified">VERIFIED</span></div>
+                        </div>
+                        <div class="m-card">
+                            <div class="m-card-title">⚖️ Market Regime & Bias</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Structural Trend</span><span class="m-stat-val" id="mOverviewTrend">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Dealing Zone</span><span class="m-stat-val" id="mOverviewZone">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Trend Strength (ADX)</span><span class="m-stat-val" id="mOverviewAdx">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Directional Verdict</span><span class="m-stat-val badge-tag badge-purp" id="mOverviewVerdict">--</span></div>
+                        </div>
+                        <div class="m-card">
+                            <div class="m-card-title">⚡ Volatility & Liquidity Flow</div>
+                            <div class="m-stat-row"><span class="m-stat-label">ATR Volatility (14)</span><span class="m-stat-val" id="mOverviewAtr">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Relative Volume (RVOL)</span><span class="m-stat-val" id="mOverviewRvol">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Institutional Activity</span><span class="m-stat-val" id="mOverviewRvolStatus">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Data Feed</span><span class="m-stat-val" id="mOverviewFeed">--</span></div>
+                        </div>
+                    </div>
+                    <div class="hindi-edu-box">
+                        <h4>🔍 Professional Verification & Integrity Statement</h4>
+                        <p id="mOverviewIntegrityNote">लाइव मार्केट में यह डेटा रियल-टाइम है। मार्केट क्लोज्ड होने पर एक्सचेंज का Official Close (LTP) डेटा उपयोग किया गया है। किसी भी अनवेरिफाइड डेटा को लाइव बताकर पेश नहीं किया जाता।</p>
+                    </div>
+                </div>
+
+                <!-- Panel 2: Price Action & Market Structure -->
+                <div class="m-panel" id="tabStructure">
+                    <div class="master-grid-2">
+                        <div class="m-card">
+                            <div class="m-card-title">🕯️ Candlestick Analysis</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Detected Pattern</span><span class="m-stat-val badge-tag badge-purp" id="mCandlePattern">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Pattern Bias</span><span class="m-stat-val" id="mCandleBias">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Signal Reliability</span><span class="m-stat-val" id="mCandleRel">--</span></div>
+                            <div style="margin-top:10px; font-size:0.85rem; color:#cbd5e1;" id="mCandleDesc">--</div>
+                            <div class="formula-card" style="margin-top:10px;" id="mCandleTrap">--</div>
+                        </div>
+                        <div class="m-card">
+                            <div class="m-card-title">🧱 Structural Breaks (BOS / CHoCH)</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Recent Swing High</span><span class="m-stat-val text-red" id="mSwingHigh">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Recent Swing Low</span><span class="m-stat-val text-green" id="mSwingLow">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Break of Structure (BOS)</span><span class="m-stat-val" id="mBosStatus">None</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Change of Character (CHoCH)</span><span class="m-stat-val" id="mChochStatus">None</span></div>
+                            <div style="margin-top:10px; font-size:0.82rem; color:#94a3b8;" id="mStructureExplanation">--</div>
+                        </div>
+                    </div>
+                    <div class="m-card">
+                        <div class="m-card-title">📏 Dealing Range, Equilibrium & Discount vs Premium</div>
+                        <div class="master-grid-3" style="margin-bottom:0;">
+                            <div class="m-stat-row"><span class="m-stat-label">Range High (45D)</span><span class="m-stat-val" id="mRangeHigh">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">50% Equilibrium</span><span class="m-stat-val text-gold" id="mEquilibrium">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Range Low (45D)</span><span class="m-stat-val" id="mRangeLow">--</span></div>
+                        </div>
+                        <div class="formula-card" style="margin-top:10px;" id="mOteRange">--</div>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Smart Money Concepts (SMC) -->
+                <div class="m-panel" id="tabSMC">
+                    <div class="master-grid-2">
+                        <div class="m-card">
+                            <div class="m-card-title">💧 Liquidity Pools & Sweeps</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Buy-Side Liquidity (BSL)</span><span class="m-stat-val text-red" id="mBslLevel">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Sell-Side Liquidity (SSL)</span><span class="m-stat-val text-green" id="mSslLevel">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Equal Highs / Lows</span><span class="m-stat-val" id="mEqualLevels">Checking...</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Liquidity Sweep Event</span><span class="m-stat-val" id="mSweepEvent">None</span></div>
+                        </div>
+                        <div class="m-card">
+                            <div class="m-card-title">📦 Institutional Order Blocks (OB)</div>
+                            <div id="mOrderBlocksList" style="font-size:0.85rem; color:#e2e8f0;">Loading order blocks...</div>
+                        </div>
+                    </div>
+                    <div class="m-card">
+                        <div class="m-card-title">⚡ Fair Value Gaps (FVG / Imbalances)</div>
+                        <div id="mFvgList" style="font-size:0.85rem; color:#e2e8f0;">Loading FVGs...</div>
+                    </div>
+                </div>
+
+                <!-- Panel 4: Volume Profile & POC -->
+                <div class="m-panel" id="tabVolume">
+                    <div class="master-grid-2">
+                        <div class="m-card">
+                            <div class="m-card-title">📊 Volume Profile Metrics</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Point of Control (POC)</span><span class="m-stat-val text-gold" id="mPocVal">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Value Area High (VAH)</span><span class="m-stat-val" id="mVahVal">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Value Area Low (VAL)</span><span class="m-stat-val" id="mValVal">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Anchored VWAP</span><span class="m-stat-val text-blue" id="mVwapVal">--</span></div>
+                            <div style="margin-top:10px; font-size:0.84rem; color:#94a3b8;" id="mVolumeProfileNote">--</div>
+                        </div>
+                        <div class="m-card">
+                            <div class="m-card-title">📈 Derivatives Sentiment & Open Interest</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Put-Call Ratio (PCR)</span><span class="m-stat-val" id="mPcrVal">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">PCR Sentiment</span><span class="m-stat-val badge-tag badge-purp" id="mPcrVerdict">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Max Call OI (Ceiling)</span><span class="m-stat-val text-red" id="mMaxCallOi">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Max Put OI (Floor)</span><span class="m-stat-val text-green" id="mMaxPutOi">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Max Pain Level</span><span class="m-stat-val" id="mMaxPain">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 5: Roadmaps & Risk Rules -->
+                <div class="m-panel" id="tabRoadmaps">
+                    <div class="master-grid-2">
+                        <div class="m-card" style="border-left: 4px solid var(--bullish-green);">
+                            <div class="m-card-title text-green">🟢 Institutional Bullish Roadmap</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Trigger Condition</span><span class="m-stat-val" id="mBullTrigger">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Entry Zone</span><span class="m-stat-val" id="mBullEntry">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Stop-Loss (Safeguard)</span><span class="m-stat-val text-red" id="mBullSl">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Target 1 (1.5x ATR)</span><span class="m-stat-val text-green" id="mBullT1">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Target 2 (Extended)</span><span class="m-stat-val text-green" id="mBullT2">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Risk-to-Reward</span><span class="m-stat-val" id="mBullRr">--</span></div>
+                            <div class="formula-card" style="margin-top:10px;" id="mBullInvalidation">--</div>
+                        </div>
+
+                        <div class="m-card" style="border-left: 4px solid var(--bearish-red);">
+                            <div class="m-card-title text-red">🔴 Institutional Bearish Roadmap</div>
+                            <div class="m-stat-row"><span class="m-stat-label">Trigger Condition</span><span class="m-stat-val" id="mBearTrigger">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Entry Zone</span><span class="m-stat-val" id="mBearEntry">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Stop-Loss (Safeguard)</span><span class="m-stat-val text-red" id="mBearSl">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Target 1 (1.5x ATR)</span><span class="m-stat-val text-red" id="mBearT1">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Target 2 (Extended)</span><span class="m-stat-val text-red" id="mBearT2">--</span></div>
+                            <div class="m-stat-row"><span class="m-stat-label">Risk-to-Reward</span><span class="m-stat-val" id="mBearRr">--</span></div>
+                            <div class="formula-card" style="margin-top:10px;" id="mBearInvalidation">--</div>
+                        </div>
+                    </div>
+
+                    <div class="hindi-edu-box">
+                        <h4>🛡️ Professional Risk Management & Position Sizing Framework</h4>
+                        <ul id="mRiskRulesList">
+                            <!-- Populated dynamically -->
+                        </ul>
+                        <div class="formula-card">
+                            📐 Position Sizing Formula: Shares/Contracts = (Total Capital × 1%) ÷ (Entry Price - Stop Loss Price)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 6: हिंदी AI Masterclass -->
+                <div class="m-panel" id="tabClassroom">
+                    <div class="hindi-edu-box" id="mHindiClassroomContent">
+                        <!-- Populated dynamically with full in-depth Hindi lessons -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Market Trading Timings & Forecast Horizons Modal -->
     <div class="modal-overlay" id="marketHoursModal">
         <div class="modal-content modal-large">
@@ -580,6 +757,6 @@
         <p>Vectivor &copy; 2026 • Quantitative Market Trajectory & Directional Analytics Platform • Professional Market Intelligence</p>
     </footer>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=4.0"></script>
 </body>
 </html>
