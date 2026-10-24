@@ -1141,3 +1141,285 @@ body {
         align-items: flex-start;
     }
 }
+
+/* ========================================================
+   TIMING, HORIZON & MARKET SCHEDULE EXTENSIONS
+   ======================================================== */
+
+.timing-nav-btn {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
+    font-weight: 600;
+}
+
+.timing-nav-btn:hover {
+    background: rgba(99, 102, 241, 0.22);
+    border-color: #818cf8;
+    color: #ffffff;
+}
+
+.session-pill {
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.session-pill.open {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.session-pill.closed {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Forecast Horizon & Operational Session Strip */
+.timing-horizon-strip {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    background: rgba(13, 20, 36, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+}
+
+@media (max-width: 768px) {
+    .timing-horizon-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.th-strip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.th-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.th-strip-lbl {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.th-strip-val {
+    font-size: 0.88rem;
+    color: #f1f5f9;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.th-strip-val.open-val {
+    color: #34d399;
+}
+
+.th-strip-val.closed-val {
+    color: #f87171;
+}
+
+/* Modal Extensions */
+.modal-large {
+    max-width: 760px;
+    width: 92%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.m-modal-icon {
+    font-size: 1.6rem;
+}
+
+.modal-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 2px 0 0;
+}
+
+/* Clocks Grid */
+.clocks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 650px) {
+    .clocks-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.clock-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.clock-flag {
+    font-size: 1.8rem;
+}
+
+.clock-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.clock-time {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.clock-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.clock-status.open-live {
+    color: #34d399;
+}
+
+.clock-status.closed-live {
+    color: #f87171;
+}
+
+.hours-subheading {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 16px 0 10px;
+}
+
+/* Schedule Table */
+.schedule-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    background: rgba(10, 15, 29, 0.4);
+}
+
+.schedule-table th {
+    background: rgba(15, 23, 42, 0.9);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.74rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.schedule-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+}
+
+.highlight-time {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.text-green {
+    color: #34d399 !important;
+}
+
+/* Horizon Explain Cards */
+.horizon-explain-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.horizon-card {
+    display: flex;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.horizon-card.target1-box {
+    border-left: 3px solid var(--bullish-green);
+}
+
+.horizon-card.target2-box {
+    border-left: 3px solid #38bdf8;
+}
+
+.horizon-card.sl-box {
+    border-left: 3px solid var(--bearish-red);
+}
+
+.horizon-card .h-icon {
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.horizon-card .h-content b {
+    display: block;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.horizon-card .h-eta {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: #a5b4fc;
+    margin: 2px 0 4px;
+}
+
+.horizon-card p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.4;
+}
+

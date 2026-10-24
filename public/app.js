@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMacroMarketPulse();
     setupEventListeners();
     startAutoTickSimulation();
+    initMarketClocks();
 });
 
 // Fetch Real Macro Pulse for India, US, and Crypto
@@ -78,9 +79,28 @@ function setupEventListeners() {
         customModal.style.display = 'none';
     });
 
+    const marketHoursModal = document.getElementById('marketHoursModal');
+    const marketHoursBtn = document.getElementById('marketHoursBtn');
+    const closeHoursModalBtn = document.getElementById('closeHoursModalBtn');
+
+    if (marketHoursBtn && marketHoursModal) {
+        marketHoursBtn.addEventListener('click', () => {
+            marketHoursModal.style.display = 'flex';
+        });
+    }
+
+    if (closeHoursModalBtn && marketHoursModal) {
+        closeHoursModalBtn.addEventListener('click', () => {
+            marketHoursModal.style.display = 'none';
+        });
+    }
+
     window.addEventListener('click', (e) => {
         if (e.target === customModal) {
             customModal.style.display = 'none';
+        }
+        if (e.target === marketHoursModal) {
+            marketHoursModal.style.display = 'none';
         }
     });
 
@@ -268,6 +288,31 @@ function renderAnalysis(data) {
     document.getElementById('target2Val').textContent = `${currency}${formatNumber(data.target2, base)}`;
     document.getElementById('stopLossVal').textContent = `${currency}${formatNumber(data.stopLoss, base)}`;
     document.getElementById('riskRewardVal').textContent = data.riskReward || '1 : 2.2';
+
+    // Forecast Horizon & Market Session Strip
+    const thTarget1 = document.getElementById('thTarget1Eta');
+    const thTarget2 = document.getElementById('thTarget2Eta');
+    const thSession = document.getElementById('thSessionStatus');
+    const thWindow = document.getElementById('thEntryWindow');
+
+    if (thTarget1) thTarget1.textContent = (data.timing && data.timing.target1Eta) ? data.timing.target1Eta : '1 – 2 Trading Days';
+    if (thTarget2) thTarget2.textContent = (data.timing && data.timing.target2Eta) ? data.timing.target2Eta : '3 – 5 Trading Days';
+
+    const sessions = getMarketSessionInfo();
+    const marketType = (data.meta && data.meta.market) ? data.meta.market : 'IN';
+    let assetSession = sessions.india;
+    if (marketType === 'US') assetSession = sessions.us;
+    else if (marketType === 'CRYPTO') assetSession = sessions.crypto;
+    else if (marketType === 'COMMODITY') assetSession = sessions.commodity;
+
+    if (thSession) {
+        thSession.textContent = assetSession.text;
+        thSession.className = `th-strip-val ${assetSession.open ? 'open-val' : 'closed-val'}`;
+    }
+
+    if (thWindow) {
+        thWindow.textContent = (data.timing && data.timing.bestWindow) ? data.timing.bestWindow : '09:30 AM – 11:00 AM IST';
+    }
 
     // Reasons List
     const reasonsList = document.getElementById('reasonsList');
@@ -602,4 +647,146 @@ function formatNumber(num, basePrice = null) {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
     });
+}
+
+// Calculate Market Session Timings & Live Operational Status (IST Based)
+function getMarketSessionInfo() {
+    const now = new Date();
+    // Normalize to IST (UTC + 5:30)
+    const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const istTime = new Date(utcMs + (5.5 * 3600000));
+    const day = istTime.getDay(); // 0 is Sunday, 6 is Saturday
+    const hours = istTime.getHours();
+    const minutes = istTime.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+
+    // 1. Indian Equities: Mon-Fri 09:15 to 15:30 IST (555 to 930 mins)
+    const isIndiaWeekend = (day === 0 || day === 6);
+    let indiaOpen = false;
+    let indiaText = '';
+    if (isIndiaWeekend) {
+        indiaOpen = false;
+        indiaText = 'CLOSED (Opens Mon 09:15 AM)';
+    } else if (totalMinutes >= 555 && totalMinutes < 930) {
+        indiaOpen = true;
+        const minsLeft = 930 - totalMinutes;
+        const h = Math.floor(minsLeft / 60);
+        const m = minsLeft % 60;
+        indiaText = `OPEN 🟢 (Closes in ${h}h ${m}m)`;
+    } else if (totalMinutes >= 540 && totalMinutes < 555) {
+        indiaOpen = false;
+        indiaText = 'PRE-MARKET 🟡 (Opens 09:15 AM)';
+    } else if (totalMinutes < 540) {
+        indiaOpen = false;
+        indiaText = 'CLOSED 🔴 (Opens 09:15 AM)';
+    } else {
+        indiaOpen = false;
+        indiaText = 'CLOSED 🔴 (Opens 09:15 AM)';
+    }
+
+    // 2. US Wall Street: Regular 19:00 to 01:30 IST (Mon night to Fri night)
+    let usOpen = false;
+    let usText = '';
+    const isUsSaturday = (day === 6 && totalMinutes >= 90);
+    const isUsSunday = (day === 0);
+    const isUsMondayMorning = (day === 1 && totalMinutes < 1140);
+
+    if (isUsSunday || isUsSaturday || isUsMondayMorning) {
+        usOpen = false;
+        usText = 'CLOSED (Opens Mon 07:00 PM IST)';
+    } else if (totalMinutes >= 1140 || totalMinutes < 90) {
+        usOpen = true;
+        usText = 'OPEN 🟢 (Closes 01:30 AM IST)';
+    } else if (totalMinutes >= 810 && totalMinutes < 1140) {
+        usOpen = false;
+        usText = 'PRE-MARKET 🟡 (Opens 07:00 PM IST)';
+    } else {
+        usOpen = false;
+        usText = 'CLOSED 🔴 (Opens 07:00 PM IST)';
+    }
+
+    // 3. Crypto: 24/7 Continuous
+    const cryptoOpen = true;
+    const cryptoText = 'OPEN 🟢 24/7 Active';
+
+    // 4. MCX Commodities: Mon-Fri 09:00 to 23:30 IST (540 to 1410 mins)
+    let commOpen = false;
+    let commText = '';
+    if (day === 0 || day === 6) {
+        commOpen = false;
+        commText = 'CLOSED (Opens Mon 09:00 AM)';
+    } else if (totalMinutes >= 540 && totalMinutes <= 1410) {
+        commOpen = true;
+        commText = 'OPEN 🟢 (Closes 11:30 PM)';
+    } else {
+        commOpen = false;
+        commText = 'CLOSED 🔴 (Opens 09:00 AM)';
+    }
+
+    return {
+        istTime,
+        india: { open: indiaOpen, text: indiaText },
+        us: { open: usOpen, text: usText },
+        crypto: { open: cryptoOpen, text: cryptoText },
+        commodity: { open: commOpen, text: commText }
+    };
+}
+
+// Live Clocks and Market Session Monitors
+function initMarketClocks() {
+    function updateClocks() {
+        const now = new Date();
+        const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+        
+        // IST (UTC + 5.5)
+        const ist = new Date(utcMs + (5.5 * 3600000));
+        // EST (UTC - 5 / -4 depending on DST; standard -5)
+        const est = new Date(utcMs - (4 * 3600000)); // EDT
+        // UTC
+        const utc = new Date(utcMs);
+
+        const formatTime = (d) => d.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const istEl = document.getElementById('liveIstTime');
+        const estEl = document.getElementById('liveEstTime');
+        const utcEl = document.getElementById('liveUtcTime');
+
+        if (istEl) istEl.textContent = formatTime(ist);
+        if (estEl) estEl.textContent = formatTime(est);
+        if (utcEl) utcEl.textContent = formatTime(utc);
+
+        const sessions = getMarketSessionInfo();
+
+        const istStatus = document.getElementById('liveIstStatus');
+        const estStatus = document.getElementById('liveEstStatus');
+        if (istStatus) {
+            istStatus.textContent = sessions.india.text;
+            istStatus.className = `clock-status ${sessions.india.open ? 'open-live' : 'closed-live'}`;
+        }
+        if (estStatus) {
+            estStatus.textContent = sessions.us.text;
+            estStatus.className = `clock-status ${sessions.us.open ? 'open-live' : 'closed-live'}`;
+        }
+
+        // Macro Cards Status Pills
+        const macroIndia = document.getElementById('macroIndiaStatus');
+        const macroUs = document.getElementById('macroUsStatus');
+        const macroCrypto = document.getElementById('macroCryptoStatus');
+
+        if (macroIndia) {
+            macroIndia.textContent = sessions.india.open ? 'OPEN 🟢' : 'CLOSED 🔴';
+            macroIndia.className = `session-pill ${sessions.india.open ? 'open' : 'closed'}`;
+        }
+        if (macroUs) {
+            macroUs.textContent = sessions.us.open ? 'OPEN 🟢' : 'CLOSED 🔴';
+            macroUs.className = `session-pill ${sessions.us.open ? 'open' : 'closed'}`;
+        }
+        if (macroCrypto) {
+            macroCrypto.textContent = '24/7 OPEN 🟢';
+            macroCrypto.className = 'session-pill open';
+        }
+    }
+
+    updateClocks();
+    setInterval(updateClocks, 1000);
 }

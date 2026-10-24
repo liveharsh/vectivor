@@ -40,6 +40,7 @@
         </div>
 
         <div class="header-actions">
+            <button id="marketHoursBtn" class="pill-btn timing-nav-btn">⏰ Market Timings & Sessions</button>
             <div class="live-pulse">
                 <span class="dot"></span>
                 <span>Auto-Refresh: Active</span>
@@ -62,6 +63,7 @@
                         <div class="m-title-row">
                             <span class="m-flag">🇮🇳</span>
                             <b>Indian Stock Market</b>
+                            <span class="session-pill" id="macroIndiaStatus">09:15–15:30 IST</span>
                         </div>
                         <span class="m-verdict neutral" id="macroIndiaVerdict">Calculating...</span>
                     </div>
@@ -73,6 +75,7 @@
                         <div class="m-title-row">
                             <span class="m-flag">🇺🇸</span>
                             <b>US Wall Street</b>
+                            <span class="session-pill" id="macroUsStatus">19:00–01:30 IST</span>
                         </div>
                         <span class="m-verdict neutral" id="macroUsVerdict">Calculating...</span>
                     </div>
@@ -84,6 +87,7 @@
                         <div class="m-title-row">
                             <span class="m-flag">🪙</span>
                             <b>Global Crypto Market</b>
+                            <span class="session-pill open" id="macroCryptoStatus">24/7 OPEN 🟢</span>
                         </div>
                         <span class="m-verdict neutral" id="macroCryptoVerdict">Calculating...</span>
                     </div>
@@ -216,6 +220,38 @@
                             <div>
                                 <span class="lbl">Risk-to-Reward Ratio</span>
                                 <b class="val" id="riskRewardVal">1 : 2.2</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Forecast Horizon & Operational Session Card -->
+                    <div class="timing-horizon-strip">
+                        <div class="th-strip-item">
+                            <span class="th-icon">⏱️</span>
+                            <div>
+                                <span class="th-strip-lbl">Target 1 Horizon</span>
+                                <b class="th-strip-val" id="thTarget1Eta">1 – 2 Trading Days</b>
+                            </div>
+                        </div>
+                        <div class="th-strip-item">
+                            <span class="th-icon">⏳</span>
+                            <div>
+                                <span class="th-strip-lbl">Target 2 Horizon</span>
+                                <b class="th-strip-val" id="thTarget2Eta">3 – 5 Trading Days</b>
+                            </div>
+                        </div>
+                        <div class="th-strip-item">
+                            <span class="th-icon">🏛️</span>
+                            <div>
+                                <span class="th-strip-lbl">Market Session</span>
+                                <b class="th-strip-val" id="thSessionStatus">Checking...</b>
+                            </div>
+                        </div>
+                        <div class="th-strip-item">
+                            <span class="th-icon">⚡</span>
+                            <div>
+                                <span class="th-strip-lbl">Best Entry Window</span>
+                                <b class="th-strip-val" id="thEntryWindow">09:30 AM – 11:00 AM IST</b>
                             </div>
                         </div>
                     </div>
@@ -412,6 +448,130 @@
                 </div>
                 <button type="submit" class="submit-analysis-btn">Calculate Trajectory & Key Levels</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Market Trading Timings & Forecast Horizons Modal -->
+    <div class="modal-overlay" id="marketHoursModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <div class="modal-title-with-icon">
+                    <span class="m-modal-icon">⏰</span>
+                    <div>
+                        <h3>Global Market Operational Hours & Target Forecast Horizons</h3>
+                        <p class="modal-sub">Official Exchange Trading Windows & Mathematical Horizon Timelines</p>
+                    </div>
+                </div>
+                <button class="close-modal-btn" id="closeHoursModalBtn">&times;</button>
+            </div>
+            
+            <div class="hours-modal-body">
+                <!-- Live Clocks Row -->
+                <div class="clocks-grid">
+                    <div class="clock-card" id="istClockCard">
+                        <span class="clock-flag">🇮🇳</span>
+                        <div class="clock-info">
+                            <span class="clock-label">Indian Standard Time (IST)</span>
+                            <span class="clock-time" id="liveIstTime">--:--:--</span>
+                            <span class="clock-status" id="liveIstStatus">Checking...</span>
+                        </div>
+                    </div>
+                    <div class="clock-card" id="estClockCard">
+                        <span class="clock-flag">🇺🇸</span>
+                        <div class="clock-info">
+                            <span class="clock-label">New York / Wall St (EST)</span>
+                            <span class="clock-time" id="liveEstTime">--:--:--</span>
+                            <span class="clock-status" id="liveEstStatus">Checking...</span>
+                        </div>
+                    </div>
+                    <div class="clock-card" id="cryptoClockCard">
+                        <span class="clock-flag">🪙</span>
+                        <div class="clock-info">
+                            <span class="clock-label">Global Crypto (UTC)</span>
+                            <span class="clock-time" id="liveUtcTime">--:--:--</span>
+                            <span class="clock-status open-live">24/7 NON-STOP 🟢</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Tables -->
+                <h4 class="hours-subheading">Exchange Operational Hours</h4>
+                <div class="schedule-table-wrap">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Market</th>
+                                <th>Regular Trading Hours</th>
+                                <th>Pre / Post Market</th>
+                                <th>Days Active</th>
+                                <th>Optimal Entry Window</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>🇮🇳 Indian Equities (NSE / BSE)</b></td>
+                                <td><span class="highlight-time">09:15 AM – 03:30 PM IST</span></td>
+                                <td>09:00 – 09:08 AM (Pre)<br>03:40 – 04:00 PM (Post)</td>
+                                <td>Monday – Friday</td>
+                                <td>09:30 AM – 11:00 AM IST</td>
+                            </tr>
+                            <tr>
+                                <td><b>🇺🇸 US Equities (NYSE / NASDAQ)</b></td>
+                                <td>
+                                    <span class="highlight-time">07:00 PM – 01:30 AM IST</span><br>
+                                    <small>(09:30 AM – 04:00 PM EST)</small>
+                                </td>
+                                <td>01:30 PM – 07:00 PM (Pre)<br>01:30 AM – 05:30 AM (Post)</td>
+                                <td>Monday – Friday</td>
+                                <td>07:30 PM – 09:30 PM IST</td>
+                            </tr>
+                            <tr>
+                                <td><b>🪙 Global Crypto (BTC, ETH, Altcoins)</b></td>
+                                <td><span class="highlight-time text-green">24 Hours / 7 Days / 365 Days</span></td>
+                                <td>Continuous (Never Closes)</td>
+                                <td>Monday – Sunday (All Week)</td>
+                                <td>05:30 PM – 10:30 PM IST (Peak Vol)</td>
+                            </tr>
+                            <tr>
+                                <td><b>🥇 MCX Commodities (Gold, Silver, Crude)</b></td>
+                                <td><span class="highlight-time">09:00 AM – 11:30 PM IST</span></td>
+                                <td>Evening Session: 05:00 PM onwards</td>
+                                <td>Monday – Friday</td>
+                                <td>09:30 AM – 11:30 AM & 06:00 – 09:00 PM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Forecast Horizon Explanation -->
+                <h4 class="hours-subheading" style="margin-top:20px;">Vectivor Target Forecast Horizons & Timelines</h4>
+                <div class="horizon-explain-grid">
+                    <div class="horizon-card target1-box">
+                        <div class="h-icon">🎯</div>
+                        <div class="h-content">
+                            <b>Primary Target (1.5x ATR)</b>
+                            <span class="h-eta">Expected ETA: 1 – 2 Trading Days</span>
+                            <p>Calculated using 14-period Average True Range volatility. High-probability swing level for quick momentum take-profit.</p>
+                        </div>
+                    </div>
+                    <div class="horizon-card target2-box">
+                        <div class="h-icon">🚀</div>
+                        <div class="h-content">
+                            <b>Extended Target (2.8x ATR)</b>
+                            <span class="h-eta">Expected ETA: 3 – 5 Trading Days</span>
+                            <p>Designed for multi-session trending continuation. Trail your stop-loss to breakeven once Primary Target is reached.</p>
+                        </div>
+                    </div>
+                    <div class="horizon-card sl-box">
+                        <div class="h-icon">🛡️</div>
+                        <div class="h-content">
+                            <b>Invalidation / Stop-Loss Safeguard (1.1x ATR)</b>
+                            <span class="h-eta">Immediate Invalidation</span>
+                            <p>If the asset price breaches this barrier at any point during market hours, the directional setup is immediately invalidated.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

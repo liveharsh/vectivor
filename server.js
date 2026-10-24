@@ -571,6 +571,16 @@ async function analyzeMarket(symbol) {
         riskReward: '1 : 2.2',
         isLive,
         source,
+        timing: {
+            timeframe: 'Daily Swing (1D Klines)',
+            target1Eta: '1 – 2 Trading Sessions (Days)',
+            target2Eta: '3 – 5 Trading Sessions (Days)',
+            invalidation: 'Active until Stop-Loss Safeguard is hit',
+            bestWindow: meta.market === 'IN' ? '09:30 AM – 11:00 AM IST' :
+                       meta.market === 'US' ? '07:30 PM – 09:30 PM IST (09:30 – 11:30 AM EST)' :
+                       meta.market === 'CRYPTO' ? '24/7 (Peak Liquidity: 05:30 PM – 10:30 PM IST)' :
+                       '09:30 AM – 11:30 AM & 05:00 PM – 09:00 PM IST'
+        },
         indicators: {
             rsi,
             macd,
