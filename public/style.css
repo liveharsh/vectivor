@@ -1820,3 +1820,333 @@ body {
     font-style: italic;
     margin-top: 15px;
 }
+
+
+/* ==========================================================================
+   MOBILE & SMARTPHONE RESPONSIVE OPTIMIZATION (PHONE-FIRST FIXES)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Base Container */
+    .main-layout {
+        padding: 12px 10px;
+        gap: 16px;
+    }
+
+    /* Top Navigation Header */
+    .app-header {
+        padding: 12px 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .logo-area {
+        gap: 12px;
+    }
+
+    .brand-logo-img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .logo-area h1 {
+        font-size: 1.45rem;
+        letter-spacing: 0.5px;
+    }
+
+    .tagline {
+        font-size: 0.76rem;
+        line-height: 1.2;
+    }
+
+    .header-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .header-actions .master-ai-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: center;
+        padding: 11px 14px;
+        font-size: 0.84rem;
+    }
+
+    .header-actions .timing-nav-btn,
+    .header-actions .primary-btn,
+    .header-actions .live-pulse {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+    }
+
+    /* Asset Filter & Horizontal Category Tabs */
+    .selector-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .selector-left {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .category-tabs {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        padding: 5px;
+        gap: 5px;
+        scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cat-tab {
+        flex-shrink: 0;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 8px 14px;
+        font-size: 0.82rem;
+    }
+
+    .quick-chips {
+        max-height: 115px;
+        gap: 6px;
+    }
+
+    .chip-btn {
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+
+    /* Hero Prediction Card */
+    .hero-prediction-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .card {
+        padding: 16px 14px;
+        border-radius: 14px;
+    }
+
+    .prediction-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding-bottom: 14px;
+    }
+
+    .prediction-header h2 {
+        font-size: 1.45rem;
+    }
+
+    .price-row {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .main-price {
+        font-size: 1.85rem;
+    }
+
+    .price-change {
+        font-size: 0.95rem;
+    }
+
+    .direction-badge-container {
+        width: 100%;
+        text-align: left;
+    }
+
+    .big-verdict-badge {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.92rem;
+        padding: 10px 14px;
+    }
+
+    .verdict-body {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px 0;
+    }
+
+    .levels-box {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .timing-horizon-strip {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+
+    .th-strip-item {
+        gap: 8px;
+    }
+
+    /* Chart Canvas */
+    .chart-canvas-wrapper {
+        height: 280px;
+    }
+
+    .chart-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .timeframe-selector {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .tf-btn {
+        flex: 1;
+        padding: 4px 6px;
+        font-size: 0.74rem;
+        text-align: center;
+    }
+
+    /* Macro Pulse Section */
+    .macro-pulse-section {
+        padding: 12px 12px;
+    }
+
+    .macro-pulse-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Master AI Analysis Modal & All Popups */
+    .master-modal-content,
+    .modal-content {
+        width: 96% !important;
+        max-height: 94vh;
+        border-radius: 12px;
+        margin: auto;
+    }
+
+    .master-modal-header {
+        padding: 12px 14px;
+    }
+
+    .master-modal-header h3 {
+        font-size: 1.05rem;
+    }
+
+    .master-asset-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+    }
+
+    .master-tabs-bar {
+        padding: 6px 8px;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .m-tab-btn {
+        padding: 7px 11px;
+        font-size: 0.76rem;
+        flex-shrink: 0;
+    }
+
+    .master-body-scroll {
+        padding: 14px 10px;
+    }
+
+    .master-grid-2,
+    .master-grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .m-card {
+        padding: 12px 14px;
+    }
+
+    .hindi-edu-box {
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+
+    .hindi-edu-box h4 {
+        font-size: 0.98rem;
+    }
+
+    .hindi-edu-box p,
+    .hindi-edu-box li {
+        font-size: 0.84rem;
+    }
+
+    .formula-card {
+        font-size: 0.76rem;
+        padding: 9px 12px;
+        overflow-x: auto;
+    }
+
+    /* Tables */
+    .schedule-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .schedule-table {
+        font-size: 0.76rem;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-logo-img {
+        width: 42px;
+        height: 42px;
+    }
+
+    .logo-area h1 {
+        font-size: 1.3rem;
+    }
+
+    .main-price {
+        font-size: 1.7rem;
+    }
+
+    .big-verdict-badge {
+        font-size: 0.88rem;
+        padding: 8px 12px;
+    }
+
+    .header-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .header-actions .master-ai-btn {
+        grid-column: 1;
+    }
+}

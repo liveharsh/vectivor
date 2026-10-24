@@ -21,6 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     startAutoTickSimulation();
     initMarketClocks();
+
+    // Auto-resize chart on phone rotation or window resize
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (currentAnalysis && currentAnalysis.chartData) {
+                drawCandlestickChart(currentAnalysis.chartData);
+            }
+        }, 150);
+    });
 });
 
 // Fetch Real Macro Pulse for India, US, and Crypto
@@ -514,6 +525,15 @@ async function handleCustomStockSubmit(e) {
 // Candlestick Chart Renderer with EMA Overlays
 function drawCandlestickChart(candles) {
     const canvas = document.getElementById('marketChart');
+    if (!canvas) return;
+
+    // Mobile & Dynamic Screen Width Auto-Fit
+    const wrapper = canvas.parentElement;
+    if (wrapper && wrapper.clientWidth > 0) {
+        canvas.width = wrapper.clientWidth;
+        canvas.height = window.innerWidth < 650 ? 280 : 380;
+    }
+
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
@@ -523,8 +543,11 @@ function drawCandlestickChart(candles) {
 
     if (!candles || candles.length === 0) return;
 
-    // Chart margins
-    const margin = { top: 20, right: 70, bottom: 35, left: 20 };
+    // Mobile-optimized chart margins
+    const isMobile = window.innerWidth < 650;
+    const margin = isMobile ? 
+        { top: 15, right: 50, bottom: 25, left: 10 } : 
+        { top: 20, right: 70, bottom: 35, left: 20 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
