@@ -207,12 +207,49 @@ function renderAnalysis(data) {
     const currency = data.meta.currency || '₹';
     const base = data.meta.basePrice || data.currentPrice;
     
+    // Check Market Operational Status for this specific asset
+    const sessions = getMarketSessionInfo();
+    const marketType = (data.meta && data.meta.market) ? data.meta.market : 'IN';
+    let isMarketOpen = false;
+    let statusBadgeText = '';
+
+    if (marketType === 'CRYPTO') {
+        isMarketOpen = true;
+        statusBadgeText = '🟢 24/7 Live Crypto Feed (Binance)';
+    } else if (marketType === 'US') {
+        isMarketOpen = sessions.us.open;
+        statusBadgeText = isMarketOpen ? '🟢 US Wall Street Live Session' : '🔴 US Market Closed • Official Close';
+    } else if (marketType === 'COMMODITY') {
+        isMarketOpen = sessions.commodity.open;
+        statusBadgeText = isMarketOpen ? '🟢 MCX Live Commodity Feed' : '🔴 MCX Market Closed • Last Settlement';
+    } else {
+        // Indian Stock Market (NSE / BSE)
+        isMarketOpen = sessions.india.open;
+        statusBadgeText = isMarketOpen ? '🟢 NSE/BSE Live Exchange Session' : '🔴 Indian Market Closed • Official Close (LTP)';
+    }
+
     // Header Info
     document.getElementById('stockSector').textContent = data.meta.sector || 'Equities';
     document.getElementById('stockTitle').textContent = data.meta.name || data.symbol;
     document.getElementById('stockPrice').textContent = `${currency}${formatNumber(data.currentPrice, base)}`;
-    if (data.source) {
-        document.getElementById('dataSourceTag').textContent = `🟢 ${data.source}`;
+    
+    const dataTag = document.getElementById('dataSourceTag');
+    if (dataTag) {
+        dataTag.textContent = statusBadgeText;
+        dataTag.className = `data-source-tag ${isMarketOpen ? 'live' : 'market-closed'}`;
+    }
+
+    // Header Live Pulse Indicator
+    const headerPulse = document.getElementById('headerLivePulse');
+    const headerText = document.getElementById('headerLiveText');
+    if (headerPulse && headerText) {
+        if (isMarketOpen) {
+            headerPulse.className = 'live-pulse';
+            headerText.textContent = 'Live Session: Active';
+        } else {
+            headerPulse.className = 'live-pulse closed-mode';
+            headerText.textContent = 'Market Closed: Static LTP';
+        }
     }
 
     const changeEl = document.getElementById('stockChange');
@@ -610,12 +647,31 @@ function setupChartTooltip(canvas, candles, margin, chartWidth, minPrice, priceR
     };
 }
 
-// Auto Tick Simulation (Makes the platform feel live)
+// Auto Tick Simulation (ONLY active when the exchange is actively OPEN)
 function startAutoTickSimulation() {
     setInterval(() => {
         if (!currentAnalysis) return;
+
+        // STRICT MARKET STATUS CHECK:
+        // When market is closed (e.g. Indian market on weekends/nights), price MUST stay frozen!
+        const sessions = getMarketSessionInfo();
+        const marketType = (currentAnalysis.meta && currentAnalysis.meta.market) ? currentAnalysis.meta.market : 'IN';
+
+        if (marketType === 'IN' && !sessions.india.open) {
+            // Indian market closed: Freeze price 100%
+            return;
+        }
+        if (marketType === 'US' && !sessions.us.open) {
+            // US market closed: Freeze price 100%
+            return;
+        }
+        if (marketType === 'COMMODITY' && !sessions.commodity.open) {
+            // MCX closed: Freeze price 100%
+            return;
+        }
+
         const base = currentAnalysis.meta.basePrice || currentAnalysis.currentPrice;
-        // Small random micro-tick
+        // Small realistic micro-tick ONLY during live active trading sessions (e.g. 24/7 Crypto)
         const delta = (Math.random() - 0.49) * (currentAnalysis.currentPrice * 0.0006);
         currentAnalysis.currentPrice += delta;
         currentAnalysis.priceChange += delta;
