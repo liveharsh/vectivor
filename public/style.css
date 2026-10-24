@@ -2898,3 +2898,53 @@ body {
         display: none;
     }
 }
+
+
+/* ==============================================================================
+   TRADINGVIEW ADVANCED CHART EMBED & MODE SWITCHER
+   ============================================================================== */
+
+.chart-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chart-modes-tabs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.chart-mode-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--font-main);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chart-mode-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.chart-mode-pill.active {
+    background: linear-gradient(135deg, rgba(0, 255, 102, 0.15) 0%, rgba(0, 255, 102, 0.05) 100%);
+    border-color: var(--bullish-green);
+    color: var(--bullish-green);
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+}
+
+.tv-chart-wrapper {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #040711;
+    min-height: 480px;
+}

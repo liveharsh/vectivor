@@ -68,9 +68,15 @@ async function analyzeMarket(symbol, timeframe = '1D') {
     const latest = candles[candles.length - 1];
     const prev = candles[candles.length - 2] || latest;
 
-    const currentPrice = roundPrice(latest.close, meta.basePrice);
-    const priceChange = roundPrice(currentPrice - prev.close, meta.basePrice);
-    const percentChange = prev.close ? Math.round(((priceChange / prev.close) * 100) * 100) / 100 : 0;
+    let currentPrice = roundPrice(latest.close, meta.basePrice);
+    let priceChange = roundPrice(currentPrice - prev.close, meta.basePrice);
+    let percentChange = prev.close ? Math.round(((priceChange / prev.close) * 100) * 100) / 100 : 0;
+
+    if (ohlcvPayload.live24h) {
+        currentPrice = roundPrice(ohlcvPayload.live24h.price, meta.basePrice);
+        priceChange = roundPrice(ohlcvPayload.live24h.change, meta.basePrice);
+        percentChange = roundPrice(ohlcvPayload.live24h.percentChange, meta.basePrice);
+    }
 
     // Technical Indicators
     const rsi = indicators.calculateRSI(closes, 14);

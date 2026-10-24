@@ -8,55 +8,55 @@ const https = require('https');
 // Universal Stock, Crypto, Forex & Commodity Universe
 const INSTRUMENT_CATALOG = {
     // --- 🇮🇳 INDIAN BENCHMARK INDICES & MEGA-CAPS ---
-    'NIFTY50': { name: 'NIFTY 50 Index', symbol: '^NSEI', market: 'IN', currency: '₹', basePrice: 24850.50, sector: 'Indian Benchmark', assetClass: 'INDEX' },
-    'BANKNIFTY': { name: 'Bank Nifty Index', symbol: '^NSEBANK', market: 'IN', currency: '₹', basePrice: 51240.20, sector: 'Banking Benchmark', assetClass: 'INDEX' },
-    'SENSEX': { name: 'BSE SENSEX', symbol: '^BSEN', market: 'IN', currency: '₹', basePrice: 81400.00, sector: 'Indian Benchmark', assetClass: 'INDEX' },
-    'NIFTYIT': { name: 'Nifty IT Index', symbol: '^CNXIT', market: 'IN', currency: '₹', basePrice: 42150.00, sector: 'IT Sector Index', assetClass: 'INDEX' },
-    'RELIANCE': { name: 'Reliance Industries', symbol: 'RELIANCE.NS', market: 'IN', currency: '₹', basePrice: 2740.80, sector: 'Energy & Telecom', assetClass: 'STOCK' },
-    'TCS': { name: 'Tata Consultancy Services', symbol: 'TCS.NS', market: 'IN', currency: '₹', basePrice: 4120.50, sector: 'IT Services', assetClass: 'STOCK' },
-    'HDFCBANK': { name: 'HDFC Bank Ltd', symbol: 'HDFCBANK.NS', market: 'IN', currency: '₹', basePrice: 1680.10, sector: 'Private Banking', assetClass: 'STOCK' },
-    'ICICIBANK': { name: 'ICICI Bank Ltd', symbol: 'ICICIBANK.NS', market: 'IN', currency: '₹', basePrice: 1265.40, sector: 'Private Banking', assetClass: 'STOCK' },
-    'INFY': { name: 'Infosys Ltd', symbol: 'INFY.NS', market: 'IN', currency: '₹', basePrice: 1860.25, sector: 'IT Services', assetClass: 'STOCK' },
-    'SBIN': { name: 'State Bank of India', symbol: 'SBIN.NS', market: 'IN', currency: '₹', basePrice: 795.30, sector: 'Public Sector Bank', assetClass: 'STOCK' },
-    'BHARTIARTL': { name: 'Bharti Airtel Ltd', symbol: 'BHARTIARTL.NS', market: 'IN', currency: '₹', basePrice: 1675.00, sector: 'Telecom & 5G', assetClass: 'STOCK' },
-    'ITC': { name: 'ITC Ltd', symbol: 'ITC.NS', market: 'IN', currency: '₹', basePrice: 485.40, sector: 'FMCG Consumer', assetClass: 'STOCK' },
-    'LT': { name: 'Larsen & Toubro', symbol: 'LT.NS', market: 'IN', currency: '₹', basePrice: 3540.00, sector: 'Infrastructure & Defense', assetClass: 'STOCK' },
-    'TATAMOTORS': { name: 'Tata Motors Ltd', symbol: 'TATAMOTORS.NS', market: 'IN', currency: '₹', basePrice: 945.60, sector: 'Automobile & EV', assetClass: 'STOCK' },
-    'BAJFINANCE': { name: 'Bajaj Finance Ltd', symbol: 'BAJFINANCE.NS', market: 'IN', currency: '₹', basePrice: 6850.00, sector: 'NBFC & Lending', assetClass: 'STOCK' },
+    'NIFTY50': { name: 'NIFTY 50 Index', symbol: '^NSEI', tvSymbol: 'NSE:NIFTY', market: 'IN', currency: '₹', basePrice: 24850.50, sector: 'Indian Benchmark', assetClass: 'INDEX' },
+    'BANKNIFTY': { name: 'Bank Nifty Index', symbol: '^NSEBANK', tvSymbol: 'NSE:BANKNIFTY', market: 'IN', currency: '₹', basePrice: 51240.20, sector: 'Banking Benchmark', assetClass: 'INDEX' },
+    'SENSEX': { name: 'BSE SENSEX', symbol: '^BSEN', tvSymbol: 'BSE:SENSEX', market: 'IN', currency: '₹', basePrice: 81400.00, sector: 'Indian Benchmark', assetClass: 'INDEX' },
+    'NIFTYIT': { name: 'Nifty IT Index', symbol: '^CNXIT', tvSymbol: 'NSE:CNXIT', market: 'IN', currency: '₹', basePrice: 42150.00, sector: 'IT Sector Index', assetClass: 'INDEX' },
+    'RELIANCE': { name: 'Reliance Industries', symbol: 'RELIANCE.NS', tvSymbol: 'NSE:RELIANCE', market: 'IN', currency: '₹', basePrice: 2740.80, sector: 'Energy & Telecom', assetClass: 'STOCK' },
+    'TCS': { name: 'Tata Consultancy Services', symbol: 'TCS.NS', tvSymbol: 'NSE:TCS', market: 'IN', currency: '₹', basePrice: 4120.50, sector: 'IT Services', assetClass: 'STOCK' },
+    'HDFCBANK': { name: 'HDFC Bank Ltd', symbol: 'HDFCBANK.NS', tvSymbol: 'NSE:HDFCBANK', market: 'IN', currency: '₹', basePrice: 1680.10, sector: 'Private Banking', assetClass: 'STOCK' },
+    'ICICIBANK': { name: 'ICICI Bank Ltd', symbol: 'ICICIBANK.NS', tvSymbol: 'NSE:ICICIBANK', market: 'IN', currency: '₹', basePrice: 1265.40, sector: 'Private Banking', assetClass: 'STOCK' },
+    'INFY': { name: 'Infosys Ltd', symbol: 'INFY.NS', tvSymbol: 'NSE:INFY', market: 'IN', currency: '₹', basePrice: 1860.25, sector: 'IT Services', assetClass: 'STOCK' },
+    'SBIN': { name: 'State Bank of India', symbol: 'SBIN.NS', tvSymbol: 'NSE:SBIN', market: 'IN', currency: '₹', basePrice: 795.30, sector: 'Public Sector Bank', assetClass: 'STOCK' },
+    'BHARTIARTL': { name: 'Bharti Airtel Ltd', symbol: 'BHARTIARTL.NS', tvSymbol: 'NSE:BHARTIARTL', market: 'IN', currency: '₹', basePrice: 1675.00, sector: 'Telecom & 5G', assetClass: 'STOCK' },
+    'ITC': { name: 'ITC Ltd', symbol: 'ITC.NS', tvSymbol: 'NSE:ITC', market: 'IN', currency: '₹', basePrice: 485.40, sector: 'FMCG Consumer', assetClass: 'STOCK' },
+    'LT': { name: 'Larsen & Toubro', symbol: 'LT.NS', tvSymbol: 'NSE:LT', market: 'IN', currency: '₹', basePrice: 3540.00, sector: 'Infrastructure & Defense', assetClass: 'STOCK' },
+    'TATAMOTORS': { name: 'Tata Motors Ltd', symbol: 'TATAMOTORS.NS', tvSymbol: 'NSE:TATAMOTORS', market: 'IN', currency: '₹', basePrice: 945.60, sector: 'Automobile & EV', assetClass: 'STOCK' },
+    'BAJFINANCE': { name: 'Bajaj Finance Ltd', symbol: 'BAJFINANCE.NS', tvSymbol: 'NSE:BAJFINANCE', market: 'IN', currency: '₹', basePrice: 6850.00, sector: 'NBFC & Lending', assetClass: 'STOCK' },
 
     // --- 🇺🇸 US BIG TECH & INDICES ---
-    'NASDAQ': { name: 'Nasdaq Composite', symbol: '^IXIC', market: 'US', currency: '$', basePrice: 18450.00, sector: 'US Tech Index', assetClass: 'INDEX' },
-    'SP500': { name: 'S&P 500 Index', symbol: '^GSPC', market: 'US', currency: '$', basePrice: 5815.00, sector: 'US Large Cap', assetClass: 'INDEX' },
-    'DOW': { name: 'Dow Jones Industrial', symbol: '^DJI', market: 'US', currency: '$', basePrice: 42800.00, sector: 'US Bluechips', assetClass: 'INDEX' },
-    'NVDA': { name: 'NVIDIA Corporation', symbol: 'NVDA', market: 'US', currency: '$', basePrice: 142.50, sector: 'AI & GPU Compute', assetClass: 'STOCK' },
-    'AAPL': { name: 'Apple Inc', symbol: 'AAPL', market: 'US', currency: '$', basePrice: 232.10, sector: 'Consumer Hardware', assetClass: 'STOCK' },
-    'MSFT': { name: 'Microsoft Corporation', symbol: 'MSFT', market: 'US', currency: '$', basePrice: 428.50, sector: 'Cloud & AI Software', assetClass: 'STOCK' },
-    'GOOGL': { name: 'Alphabet Inc (Google)', symbol: 'GOOGL', market: 'US', currency: '$', basePrice: 166.40, sector: 'Search & Cloud', assetClass: 'STOCK' },
-    'AMZN': { name: 'Amazon.com Inc', symbol: 'AMZN', market: 'US', currency: '$', basePrice: 186.50, sector: 'E-Commerce & AWS', assetClass: 'STOCK' },
-    'META': { name: 'Meta Platforms', symbol: 'META', market: 'US', currency: '$', basePrice: 575.20, sector: 'Social Media & AI', assetClass: 'STOCK' },
-    'TSLA': { name: 'Tesla Inc', symbol: 'TSLA', market: 'US', currency: '$', basePrice: 218.40, sector: 'EV & Robotics', assetClass: 'STOCK' },
+    'NASDAQ': { name: 'Nasdaq Composite', symbol: '^IXIC', tvSymbol: 'NASDAQ:IXIC', market: 'US', currency: '$', basePrice: 18450.00, sector: 'US Tech Index', assetClass: 'INDEX' },
+    'SP500': { name: 'S&P 500 Index', symbol: '^GSPC', tvSymbol: 'FOREXCOM:SPXUSD', market: 'US', currency: '$', basePrice: 5815.00, sector: 'US Large Cap', assetClass: 'INDEX' },
+    'DOW': { name: 'Dow Jones Industrial', symbol: '^DJI', tvSymbol: 'FOREXCOM:DJI', market: 'US', currency: '$', basePrice: 42800.00, sector: 'US Bluechips', assetClass: 'INDEX' },
+    'NVDA': { name: 'NVIDIA Corporation', symbol: 'NVDA', tvSymbol: 'NASDAQ:NVDA', market: 'US', currency: '$', basePrice: 142.50, sector: 'AI & GPU Compute', assetClass: 'STOCK' },
+    'AAPL': { name: 'Apple Inc', symbol: 'AAPL', tvSymbol: 'NASDAQ:AAPL', market: 'US', currency: '$', basePrice: 232.10, sector: 'Consumer Hardware', assetClass: 'STOCK' },
+    'MSFT': { name: 'Microsoft Corporation', symbol: 'MSFT', tvSymbol: 'NASDAQ:MSFT', market: 'US', currency: '$', basePrice: 428.50, sector: 'Cloud & AI Software', assetClass: 'STOCK' },
+    'GOOGL': { name: 'Alphabet Inc (Google)', symbol: 'GOOGL', tvSymbol: 'NASDAQ:GOOGL', market: 'US', currency: '$', basePrice: 166.40, sector: 'Search & Cloud', assetClass: 'STOCK' },
+    'AMZN': { name: 'Amazon.com Inc', symbol: 'AMZN', tvSymbol: 'NASDAQ:AMZN', market: 'US', currency: '$', basePrice: 186.50, sector: 'E-Commerce & AWS', assetClass: 'STOCK' },
+    'META': { name: 'Meta Platforms', symbol: 'META', tvSymbol: 'NASDAQ:META', market: 'US', currency: '$', basePrice: 575.20, sector: 'Social Media & AI', assetClass: 'STOCK' },
+    'TSLA': { name: 'Tesla Inc', symbol: 'TSLA', tvSymbol: 'NASDAQ:TSLA', market: 'US', currency: '$', basePrice: 218.40, sector: 'EV & Robotics', assetClass: 'STOCK' },
 
     // --- 🪙 CRYPTOCURRENCY (24/7 LIVE) ---
-    'BTC': { name: 'Bitcoin (BTC)', symbol: 'BTC-USD', market: 'CRYPTO', currency: '$', basePrice: 68450.00, sector: 'Digital Gold (Crypto)', assetClass: 'CRYPTO' },
-    'ETH': { name: 'Ethereum (ETH)', symbol: 'ETH-USD', market: 'CRYPTO', currency: '$', basePrice: 2645.50, sector: 'Smart Contracts (Crypto)', assetClass: 'CRYPTO' },
-    'SOL': { name: 'Solana (SOL)', symbol: 'SOL-USD', market: 'CRYPTO', currency: '$', basePrice: 174.20, sector: 'Layer 1 Blockchain', assetClass: 'CRYPTO' },
-    'BNB': { name: 'Binance Coin (BNB)', symbol: 'BNB-USD', market: 'CRYPTO', currency: '$', basePrice: 592.80, sector: 'Exchange Ecosystem', assetClass: 'CRYPTO' },
-    'XRP': { name: 'Ripple (XRP)', symbol: 'XRP-USD', market: 'CRYPTO', currency: '$', basePrice: 0.5420, sector: 'Cross-Border Payments', assetClass: 'CRYPTO' },
-    'DOGE': { name: 'Dogecoin (DOGE)', symbol: 'DOGE-USD', market: 'CRYPTO', currency: '$', basePrice: 0.1435, sector: 'Meme & Payments', assetClass: 'CRYPTO' },
+    'BTC': { name: 'Bitcoin (BTC)', symbol: 'BTC-USD', tvSymbol: 'BITSTAMP:BTCUSD', market: 'CRYPTO', currency: '$', basePrice: 80000.00, sector: 'Digital Gold (Crypto)', assetClass: 'CRYPTO' },
+    'ETH': { name: 'Ethereum (ETH)', symbol: 'ETH-USD', tvSymbol: 'BINANCE:ETHUSDT', market: 'CRYPTO', currency: '$', basePrice: 2645.50, sector: 'Smart Contracts (Crypto)', assetClass: 'CRYPTO' },
+    'SOL': { name: 'Solana (SOL)', symbol: 'SOL-USD', tvSymbol: 'BINANCE:SOLUSDT', market: 'CRYPTO', currency: '$', basePrice: 174.20, sector: 'Layer 1 Blockchain', assetClass: 'CRYPTO' },
+    'BNB': { name: 'Binance Coin (BNB)', symbol: 'BNB-USD', tvSymbol: 'BINANCE:BNBUSDT', market: 'CRYPTO', currency: '$', basePrice: 592.80, sector: 'Exchange Ecosystem', assetClass: 'CRYPTO' },
+    'XRP': { name: 'Ripple (XRP)', symbol: 'XRP-USD', tvSymbol: 'BINANCE:XRPUSDT', market: 'CRYPTO', currency: '$', basePrice: 0.5420, sector: 'Cross-Border Payments', assetClass: 'CRYPTO' },
+    'DOGE': { name: 'Dogecoin (DOGE)', symbol: 'DOGE-USD', tvSymbol: 'BINANCE:DOGEUSDT', market: 'CRYPTO', currency: '$', basePrice: 0.1435, sector: 'Meme & Payments', assetClass: 'CRYPTO' },
 
     // --- 🥇 COMMODITIES ---
-    'GOLD': { name: 'Gold Spot', symbol: 'GC=F', market: 'COMMODITY', currency: '$', basePrice: 2735.60, sector: 'Precious Metals', assetClass: 'COMMODITY' },
-    'SILVER': { name: 'Silver Spot', symbol: 'SI=F', market: 'COMMODITY', currency: '$', basePrice: 33.80, sector: 'Precious & Industrial', assetClass: 'COMMODITY' },
-    'CRUDEOIL': { name: 'Brent Crude Oil', symbol: 'BZ=F', market: 'COMMODITY', currency: '$', basePrice: 74.20, sector: 'Global Energy', assetClass: 'COMMODITY' },
+    'GOLD': { name: 'Gold Spot', symbol: 'GC=F', tvSymbol: 'TVC:GOLD', market: 'COMMODITY', currency: '$', basePrice: 2735.60, sector: 'Precious Metals', assetClass: 'COMMODITY' },
+    'SILVER': { name: 'Silver Spot', symbol: 'SI=F', tvSymbol: 'TVC:SILVER', market: 'COMMODITY', currency: '$', basePrice: 33.80, sector: 'Precious & Industrial', assetClass: 'COMMODITY' },
+    'CRUDEOIL': { name: 'Brent Crude Oil', symbol: 'BZ=F', tvSymbol: 'NYMEX:CL1!', market: 'COMMODITY', currency: '$', basePrice: 74.20, sector: 'Global Energy', assetClass: 'COMMODITY' },
 
     // --- 💱 FOREX MAJOR PAIRS ---
-    'EURUSD': { name: 'EUR / USD Spot', symbol: 'EURUSD=X', market: 'FOREX', currency: '$', basePrice: 1.0820, sector: 'Major FX Pair', assetClass: 'FOREX' },
-    'GBPUSD': { name: 'GBP / USD Spot', symbol: 'GBPUSD=X', market: 'FOREX', currency: '$', basePrice: 1.2980, sector: 'Major FX Pair', assetClass: 'FOREX' },
-    'USDJPY': { name: 'USD / JPY Spot', symbol: 'JPY=X', market: 'FOREX', currency: '¥', basePrice: 152.40, sector: 'Major FX Pair', assetClass: 'FOREX' },
+    'EURUSD': { name: 'EUR / USD Spot', symbol: 'EURUSD=X', tvSymbol: 'FX:EURUSD', market: 'FOREX', currency: '$', basePrice: 1.0820, sector: 'Major FX Pair', assetClass: 'FOREX' },
+    'GBPUSD': { name: 'GBP / USD Spot', symbol: 'GBPUSD=X', tvSymbol: 'FX:GBPUSD', market: 'FOREX', currency: '$', basePrice: 1.2980, sector: 'Major FX Pair', assetClass: 'FOREX' },
+    'USDJPY': { name: 'USD / JPY Spot', symbol: 'JPY=X', tvSymbol: 'FX:USDJPY', market: 'FOREX', currency: '¥', basePrice: 152.40, sector: 'Major FX Pair', assetClass: 'FOREX' },
 
     // --- 🌐 GLOBAL MACRO BENCHMARKS ---
-    'DXY': { name: 'US Dollar Index', symbol: 'DX-Y.NYB', market: 'US', currency: '$', basePrice: 104.25, sector: 'Global Currency Reserve', assetClass: 'MACRO' },
-    'US10Y': { name: 'US 10Y Bond Yield', symbol: '^TNX', market: 'US', currency: '%', basePrice: 4.24, sector: 'Sovereign Debt', assetClass: 'MACRO' }
+    'DXY': { name: 'US Dollar Index', symbol: 'DX-Y.NYB', tvSymbol: 'CAPITALCOM:DXY', market: 'US', currency: '$', basePrice: 104.25, sector: 'Global Currency Reserve', assetClass: 'MACRO' },
+    'US10Y': { name: 'US 10Y Bond Yield', symbol: '^TNX', tvSymbol: 'TVC:US10Y', market: 'US', currency: '%', basePrice: 4.24, sector: 'Sovereign Debt', assetClass: 'MACRO' }
 };
 
 // Bounded In-Memory Cache (TTL: 45s for live/active, 30m for weekend closed markets)
@@ -110,13 +110,26 @@ async function fetchOHLCV(symbol, timeframe = '1D') {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 4000);
             
-            const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${pair}&interval=${binanceInterval}&limit=90`, {
-                signal: controller.signal
-            });
+            const [klinesRes, tickerRes] = await Promise.all([
+                fetch(`https://api.binance.com/api/v3/klines?symbol=${pair}&interval=${binanceInterval}&limit=90`, { signal: controller.signal }),
+                fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${pair}`, { signal: controller.signal }).catch(() => null)
+            ]);
             clearTimeout(timeoutId);
 
-            if (res.ok) {
-                const raw = await res.json();
+            if (klinesRes.ok) {
+                const raw = await klinesRes.json();
+                let live24h = null;
+                if (tickerRes && tickerRes.ok) {
+                    try {
+                        const t = await tickerRes.json();
+                        live24h = {
+                            price: parseFloat(t.lastPrice),
+                            change: parseFloat(t.priceChange),
+                            percentChange: parseFloat(t.priceChangePercent)
+                        };
+                    } catch (e) {}
+                }
+
                 if (Array.isArray(raw) && raw.length > 5) {
                     const candles = raw.map(k => ({
                         date: new Date(k[0]).toISOString().split('T')[0],
@@ -133,6 +146,7 @@ async function fetchOHLCV(symbol, timeframe = '1D') {
                         meta,
                         candles,
                         timeframe,
+                        live24h,
                         isLive: true,
                         source: 'Binance Live Public Market Feed',
                         dataStatus: 'VERIFIED_LIVE',

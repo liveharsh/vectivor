@@ -161,17 +161,104 @@ function setupEventListeners() {
         });
     });
 
+    // Chart Mode Toggle (TradingView Live vs Vectivor Quant)
+    const btnTvMode = document.getElementById('btnTvMode');
+    const btnQuantMode = document.getElementById('btnQuantMode');
+    const tvContainer = document.getElementById('tvChartContainer');
+    const customWrapper = document.getElementById('customChartWrapper');
+    const quantTfButtons = document.getElementById('quantTfButtons');
+    const chartSubText = document.getElementById('chartSubText');
+
+    if (btnTvMode && btnQuantMode) {
+        btnTvMode.addEventListener('click', () => {
+            btnTvMode.classList.add('active');
+            btnQuantMode.classList.remove('active');
+            if (tvContainer) tvContainer.style.display = 'block';
+            if (customWrapper) customWrapper.style.display = 'none';
+            if (quantTfButtons) quantTfButtons.style.display = 'none';
+            if (chartSubText) chartSubText.textContent = 'Direct Bitstamp / Binance / NSE Real-Time Feed via TradingView Engine';
+            if (currentAnalysis) renderTradingViewChart(currentSymbol, currentAnalysis.meta);
+        });
+
+        btnQuantMode.addEventListener('click', () => {
+            btnQuantMode.classList.add('active');
+            btnTvMode.classList.remove('active');
+            if (tvContainer) tvContainer.style.display = 'none';
+            if (customWrapper) customWrapper.style.display = 'block';
+            if (quantTfButtons) quantTfButtons.style.display = 'flex';
+            if (chartSubText) chartSubText.textContent = 'Includes 20 EMA (Cyan) and 50 EMA (Orange) Trend Moving Averages';
+            if (currentAnalysis && currentAnalysis.chartData) {
+                drawCandlestickChart(currentAnalysis.chartData);
+            }
+        });
+    }
+
     // Timeframe buttons
     document.querySelectorAll('.tf-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             currentTimeframe = e.target.dataset.tf;
-            if (currentAnalysis) {
-                drawCandlestickChart(currentAnalysis.chartData);
-            }
+            loadStockAnalysis(currentSymbol, currentTimeframe);
         });
     });
+}
+
+// TradingView Symbol Mapping & Embed Initializer
+let tvWidget = null;
+
+function getTradingViewSymbol(symbol, meta) {
+    if (meta && meta.tvSymbol) return meta.tvSymbol;
+    if (symbol === 'BTC') return 'BITSTAMP:BTCUSD';
+    if (symbol === 'ETH') return 'BINANCE:ETHUSDT';
+    if (symbol === 'SOL') return 'BINANCE:SOLUSDT';
+    if (symbol === 'DOGE') return 'BINANCE:DOGEUSDT';
+    if (symbol === 'NIFTY50') return 'NSE:NIFTY';
+    if (symbol === 'BANKNIFTY') return 'NSE:BANKNIFTY';
+    if (symbol === 'SENSEX') return 'BSE:SENSEX';
+    if (symbol === 'RELIANCE') return 'NSE:RELIANCE';
+    if (symbol === 'NVDA') return 'NASDAQ:NVDA';
+    if (symbol === 'GOLD') return 'TVC:GOLD';
+    if (symbol === 'EURUSD') return 'FX:EURUSD';
+    return `BINANCE:${symbol}USDT`;
+}
+
+function renderTradingViewChart(symbol, meta) {
+    const container = document.getElementById('tvChartContainer');
+    if (!container || typeof TradingView === 'undefined') return;
+
+    const tvSym = getTradingViewSymbol(symbol, meta);
+    container.innerHTML = '';
+    const chartDiv = document.createElement('div');
+    chartDiv.id = 'tv_embed_instance';
+    chartDiv.style.width = '100%';
+    chartDiv.style.height = '100%';
+    container.appendChild(chartDiv);
+
+    try {
+        tvWidget = new TradingView.widget({
+            "autosize": true,
+            "symbol": tvSym,
+            "interval": "D",
+            "timezone": "Asia/Kolkata",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#040711",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": "tv_embed_instance",
+            "hide_side_toolbar": false,
+            "studies": [
+                "MASimple@tv-basicstudies",
+                "RSI@tv-basicstudies"
+            ],
+            "backgroundColor": "#040711",
+            "gridColor": "rgba(255, 255, 255, 0.05)"
+        });
+    } catch (err) {
+        console.error('TradingView widget initialization error:', err);
+    }
 }
 
 // Fetch list of popular stocks & crypto
@@ -223,8 +310,9 @@ function filterChips(query) {
 }
 
 // Load Stock Analysis from API
-async function loadStockAnalysis(symbol) {
+async function loadStockAnalysis(symbol, tf = currentTimeframe) {
     currentSymbol = symbol;
+    currentTimeframe = tf;
 
     // Immediately synchronize the active state on all chip buttons
     document.querySelectorAll('.chip-btn').forEach(btn => {
@@ -235,11 +323,17 @@ async function loadStockAnalysis(symbol) {
     if (card) card.style.opacity = '0.6';
 
     try {
-        const res = await fetch(`/api/analyze/${symbol}`);
+        const res = await fetch(`/api/analyze/${symbol}?timeframe=${currentTimeframe}`);
         if (!res.ok) throw new Error('Failed to analyze');
         const data = await res.json();
         currentAnalysis = data;
         renderAnalysis(data);
+
+        // Always sync the TradingView chart to the selected asset
+        const btnTvMode = document.getElementById('btnTvMode');
+        if (!btnTvMode || btnTvMode.classList.contains('active')) {
+            renderTradingViewChart(symbol, data.meta);
+        }
     } catch (err) {
         console.error('Analysis error:', err);
     } finally {
@@ -702,44 +796,30 @@ function setupChartTooltip(canvas, candles, margin, chartWidth, minPrice, priceR
     };
 }
 
-// Auto Tick Simulation (ONLY active when the exchange is actively OPEN)
+// Real Live Exchange Price Refresh (Refreshes every 6s for actively open markets e.g. 24/7 Crypto)
 function startAutoTickSimulation() {
-    setInterval(() => {
+    setInterval(async () => {
         if (!currentAnalysis) return;
 
-        // STRICT MARKET STATUS CHECK:
-        // When market is closed (e.g. Indian market on weekends/nights), price MUST stay frozen!
+        // Freeze price if the market session is closed
         const sessions = getMarketSessionInfo();
         const marketType = (currentAnalysis.meta && currentAnalysis.meta.market) ? currentAnalysis.meta.market : 'IN';
 
-        if (marketType === 'IN' && !sessions.india.open) {
-            // Indian market closed: Freeze price 100%
-            return;
-        }
-        if (marketType === 'US' && !sessions.us.open) {
-            // US market closed: Freeze price 100%
-            return;
-        }
-        if (marketType === 'COMMODITY' && !sessions.commodity.open) {
-            // MCX closed: Freeze price 100%
-            return;
-        }
+        if (marketType === 'IN' && !sessions.india.open) return;
+        if (marketType === 'US' && !sessions.us.open) return;
+        if (marketType === 'COMMODITY' && !sessions.commodity.open) return;
 
-        const base = currentAnalysis.meta.basePrice || currentAnalysis.currentPrice;
-        // Small realistic micro-tick ONLY during live active trading sessions (e.g. 24/7 Crypto)
-        const delta = (Math.random() - 0.49) * (currentAnalysis.currentPrice * 0.0006);
-        currentAnalysis.currentPrice += delta;
-        currentAnalysis.priceChange += delta;
-        currentAnalysis.percentChange = Math.round(((currentAnalysis.priceChange / (currentAnalysis.currentPrice - currentAnalysis.priceChange)) * 100) * 100) / 100;
-
-        const currency = currentAnalysis.meta.currency || '₹';
-        document.getElementById('stockPrice').textContent = `${currency}${formatNumber(currentAnalysis.currentPrice, base)}`;
-        
-        const changeEl = document.getElementById('stockChange');
-        const isUp = currentAnalysis.priceChange >= 0;
-        changeEl.className = `price-change ${isUp ? 'up' : 'down'}`;
-        changeEl.textContent = `${isUp ? '+' : ''}${formatNumber(currentAnalysis.priceChange, base)} (${isUp ? '+' : ''}${currentAnalysis.percentChange}%)`;
-    }, 3500);
+        try {
+            // Fetch genuine real-time price from exchange
+            const res = await fetch(`/api/analyze/${currentSymbol}?timeframe=${currentTimeframe}`);
+            if (!res.ok) return;
+            const freshData = await res.json();
+            currentAnalysis = freshData;
+            renderAnalysis(freshData);
+        } catch (e) {
+            // Silently wait for next interval on network hiccup
+        }
+    }, 6000);
 }
 
 // Universal Number formatter with Crypto Micro-Price Support
