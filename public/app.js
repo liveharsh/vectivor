@@ -362,9 +362,22 @@ function renderAnalysis(data) {
         isMarketOpen = sessions.commodity.open;
         statusBadgeText = isMarketOpen ? '🟢 MCX Live Commodity Feed' : '🔴 MCX Market Closed • Last Settlement';
     } else {
-        // Indian Stock Market (NSE / BSE)
+        // Indian Stock Market (NSE / BSE - Powered by Groww.in)
         isMarketOpen = sessions.india.open;
-        statusBadgeText = isMarketOpen ? '🟢 NSE/BSE Live Exchange Session' : '🔴 Indian Market Closed • Official Close (LTP)';
+        statusBadgeText = isMarketOpen ? '🟢 Groww.in Live Feed (NSE/BSE)' : '🔴 NSE/BSE Closed • Groww Official Close (LTP)';
+    }
+
+    // Groww Direct Chart Button Visibility
+    const growwBtn = document.getElementById('growwDirectLink');
+    if (growwBtn) {
+        if (marketType === 'IN') {
+            const growwUrl = (data.meta && data.meta.growwUrl) ? data.meta.growwUrl : `https://groww.in/stocks/${data.symbol.toLowerCase()}`;
+            growwBtn.href = growwUrl;
+            growwBtn.style.display = 'inline-flex';
+            growwBtn.innerHTML = `🟢 Open in Groww Chart ↗`;
+        } else {
+            growwBtn.style.display = 'none';
+        }
     }
 
     // Header Info

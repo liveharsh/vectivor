@@ -2948,3 +2948,36 @@ body {
     background: #040711;
     min-height: 480px;
 }
+
+
+/* Groww Chart Integration Pill */
+.chart-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.groww-link-btn {
+    background: rgba(0, 209, 157, 0.12);
+    border: 1px solid rgba(0, 209, 157, 0.45);
+    color: #00d19d;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--font-main);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.groww-link-btn:hover {
+    background: rgba(0, 209, 157, 0.25);
+    border-color: #00d19d;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(0, 209, 157, 0.4);
+    transform: translateY(-1px);
+}
