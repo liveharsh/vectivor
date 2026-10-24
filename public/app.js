@@ -115,8 +115,8 @@ async function fetchStockList() {
         const res = await fetch('/api/stocks');
         availableStocks = await res.json();
         renderChips(availableStocks);
-        // Default to Indian benchmark NIFTY50
-        loadStockAnalysis('NIFTY50');
+        // Load the initial selected asset (BTC by default, matching the active button)
+        loadStockAnalysis(currentSymbol);
     } catch (err) {
         console.error('Error fetching stock list:', err);
     }
@@ -138,8 +138,6 @@ function renderChips(stocks) {
         btn.textContent = `${icon}${stock.key}`;
         btn.title = `${stock.name} (${stock.sector})`;
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
             loadStockAnalysis(stock.key);
         });
         quickChipsContainer.appendChild(btn);
@@ -162,6 +160,15 @@ function filterChips(query) {
 // Load Stock Analysis from API
 async function loadStockAnalysis(symbol) {
     currentSymbol = symbol;
+
+    // Immediately synchronize the active state on all chip buttons
+    document.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.symbol === symbol);
+    });
+
+    const card = document.getElementById('predictionCard');
+    if (card) card.style.opacity = '0.6';
+
     try {
         const res = await fetch(`/api/analyze/${symbol}`);
         if (!res.ok) throw new Error('Failed to analyze');
@@ -170,6 +177,8 @@ async function loadStockAnalysis(symbol) {
         renderAnalysis(data);
     } catch (err) {
         console.error('Analysis error:', err);
+    } finally {
+        if (card) card.style.opacity = '1';
     }
 }
 

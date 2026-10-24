@@ -630,9 +630,9 @@ app.get('/api/market-pulse', async (req, res) => {
         const usScore = Math.round((nasdaq.score + sp500.score + nvda.score) / 3);
 
         const getSummary = (score) => {
-            if (score >= 25) return { verdict: 'BULLISH (UPAR ↗)', color: '#10b981', bias: 'UP' };
-            if (score <= -25) return { verdict: 'BEARISH (NICHE ↘)', color: '#ef4444', bias: 'DOWN' };
-            return { verdict: 'SIDEWAYS / RANGEBOUND ↔', color: '#eab308', bias: 'NEUTRAL' };
+            if (score >= 25) return { verdict: 'BULLISH (UPWARD ↗)', color: '#10b981', bias: 'UP' };
+            if (score <= -25) return { verdict: 'BEARISH (DOWNWARD ↘)', color: '#ef4444', bias: 'DOWN' };
+            return { verdict: 'RANGEBOUND (SIDEWAYS ↔)', color: '#eab308', bias: 'NEUTRAL' };
         };
 
         res.json({
