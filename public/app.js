@@ -335,8 +335,6 @@ function renderAnalysis(data) {
     if (thTarget1) thTarget1.textContent = (data.timing && data.timing.target1Eta) ? data.timing.target1Eta : '1 – 2 Trading Days';
     if (thTarget2) thTarget2.textContent = (data.timing && data.timing.target2Eta) ? data.timing.target2Eta : '3 – 5 Trading Days';
 
-    const sessions = getMarketSessionInfo();
-    const marketType = (data.meta && data.meta.market) ? data.meta.market : 'IN';
     let assetSession = sessions.india;
     if (marketType === 'US') assetSession = sessions.us;
     else if (marketType === 'CRYPTO') assetSession = sessions.crypto;
