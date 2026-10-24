@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     startAutoTickSimulation();
     initMarketClocks();
+    initTerminalViews();
 
     // Auto-resize chart on phone rotation or window resize
     let resizeTimer = null;
@@ -1099,3 +1100,596 @@ function setElText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
 }
+
+
+// ==============================================================================
+// VECTIVOR PRO MAX TERMINAL VIEW CONTROLLERS & WORKSPACES
+// ==============================================================================
+
+function initTerminalViews() {
+    setupSidebarNavigation();
+    setupScreenerController();
+    setupFundamentalsController();
+    setupDerivativesController();
+    setupBacktestController();
+    setupPaperTradingController();
+    setupNewsCalendarController();
+    setupWatchlistController();
+}
+
+function showToast(message, isError = false) {
+    const toast = document.getElementById('terminalToast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.style.borderColor = isError ? 'var(--bearish-red)' : 'var(--bullish-green)';
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 4000);
+}
+
+// 1. Sidebar Navigation
+function setupSidebarNavigation() {
+    const navItems = document.querySelectorAll('.sidebar-nav .nav-item[data-view]');
+    const views = document.querySelectorAll('.terminal-view');
+    const sidebar = document.getElementById('terminalSidebar');
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const sidebarMasterBtn = document.getElementById('sidebarMasterAiBtn');
+    const sidebarHoursBtn = document.getElementById('sidebarMarketHoursBtn');
+
+    navItems.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetViewId = btn.getAttribute('data-view');
+            navItems.forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
+
+            views.forEach(v => {
+                if (v.id === targetViewId) {
+                    v.style.display = 'block';
+                } else {
+                    v.style.display = 'none';
+                }
+            });
+
+            // Trigger view data refresh
+            if (targetViewId === 'view-screener') loadScreenerData();
+            if (targetViewId === 'view-fundamentals') loadFundamentalsData('RELIANCE');
+            if (targetViewId === 'view-derivatives') loadDerivativesData(currentSymbol || 'NIFTY50');
+            if (targetViewId === 'view-papertrading') loadPaperTradingData();
+            if (targetViewId === 'view-newscalendar') loadNewsCalendarData();
+
+            // Auto close mobile drawer
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    });
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    if (mobileBtn && sidebar) {
+        mobileBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+    }
+
+    if (sidebarMasterBtn) {
+        sidebarMasterBtn.addEventListener('click', () => {
+            const modal = document.getElementById('masterModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                loadMasterAnalysis(currentSymbol);
+            }
+        });
+    }
+
+    if (sidebarHoursBtn) {
+        sidebarHoursBtn.addEventListener('click', () => {
+            const modal = document.getElementById('marketHoursModal');
+            if (modal) modal.style.display = 'flex';
+        });
+    }
+}
+
+// 2. Screener Controller
+let currentScreenerType = 'gainers';
+let cachedScreenerData = null;
+
+function setupScreenerController() {
+    const tabs = document.querySelectorAll('.screener-tab');
+    const refreshBtn = document.getElementById('refreshScreenerBtn');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentScreenerType = tab.getAttribute('data-screener');
+            renderScreenerTable();
+        });
+    });
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            loadScreenerData(true);
+        });
+    }
+}
+
+async function loadScreenerData(force = false) {
+    const tbody = document.getElementById('screenerTableBody');
+    if (!tbody) return;
+    if (!force && cachedScreenerData) {
+        renderScreenerTable();
+        return;
+    }
+
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px;">Scanning live exchange feeds...</td></tr>`;
+    try {
+        const res = await fetch('/api/screener');
+        const data = await res.json();
+        cachedScreenerData = data.screeners;
+        renderScreenerTable();
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--bearish-red);">Failed to load screener data: ${err.message}</td></tr>`;
+    }
+}
+
+function renderScreenerTable() {
+    const tbody = document.getElementById('screenerTableBody');
+    if (!tbody || !cachedScreenerData) return;
+
+    const list = cachedScreenerData[currentScreenerType] || [];
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px;">No matching assets in this screener filter.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = list.map(item => {
+        const changeClass = (item.changePercent || 0) >= 0 ? 'text-green' : 'text-red';
+        const changeSign = (item.changePercent || 0) >= 0 ? '+' : '';
+        const cur = item.category === 'IN' ? '₹' : '$';
+        return `
+            <tr>
+                <td><b>${item.symbol}</b></td>
+                <td>${item.name || item.symbol}</td>
+                <td><span class="category-tag">${item.category}</span></td>
+                <td style="font-family: var(--font-mono);">${cur}${formatNumber(item.price)}</td>
+                <td class="${changeClass}" style="font-family: var(--font-mono); font-weight:700;">${changeSign}${(item.changePercent || 0).toFixed(2)}%</td>
+                <td style="font-family: var(--font-mono);">${item.rsi ? item.rsi.toFixed(1) : '--'}</td>
+                <td><span class="badge-tag ${item.bias === 'BULLISH' ? 'badge-bull' : (item.bias === 'BEARISH' ? 'badge-bear' : 'badge-purp')}">${item.bias || 'NEUTRAL'}</span></td>
+                <td>
+                    <button class="pill-btn primary-btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="analyzeFromScreener('${item.symbol}')">
+                        Inspect ↗
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+window.analyzeFromScreener = function(symbol) {
+    const overviewTab = document.querySelector('.sidebar-nav .nav-item[data-view="view-overview"]');
+    if (overviewTab) overviewTab.click();
+    loadStockAnalysis(symbol);
+};
+
+// 3. Fundamentals Controller
+function setupFundamentalsController() {
+    const pills = document.querySelectorAll('#fundamentalsSymbolPicker .f-pill');
+    pills.forEach(p => {
+        p.addEventListener('click', () => {
+            pills.forEach(x => x.classList.remove('active'));
+            p.classList.add('active');
+            const sym = p.getAttribute('data-sym');
+            loadFundamentalsData(sym);
+        });
+    });
+}
+
+async function loadFundamentalsData(symbol) {
+    try {
+        const res = await fetch(`/api/fundamentals/${symbol}`);
+        const data = await res.json();
+        
+        setElText('fPeVal', data.peRatio ? `${data.peRatio}x` : 'N/A');
+        setElText('fPbVal', data.pbRatio ? `${data.pbRatio}x` : 'N/A');
+        setElText('fEvVal', data.evEbitda ? `${data.evEbitda}x` : 'N/A');
+        setElText('fDivVal', data.dividendYield ? `${data.dividendYield}%` : '0.00%');
+        
+        const valEl = document.getElementById('fValuationVal');
+        if (valEl) {
+            valEl.textContent = data.valuation || 'FAIR';
+            valEl.className = `badge-tag ${data.valuation === 'UNDERVALUED' ? 'badge-bull' : (data.valuation === 'OVERVALUED' ? 'badge-bear' : 'badge-purp')}`;
+        }
+
+        setElText('fRoeVal', data.roe ? `${data.roe}%` : 'N/A');
+        setElText('fRoceVal', data.roce ? `${data.roce}%` : 'N/A');
+        setElText('fMarginVal', data.operatingMargin ? `${data.operatingMargin}%` : 'N/A');
+        setElText('fEpsVal', data.eps ? `₹${data.eps}` : 'N/A');
+        setElText('fMcapVal', data.marketCap || 'N/A');
+
+        setElText('fDebtVal', data.debtToEquity ? `${data.debtToEquity}` : '0.00');
+        setElText('fRevVal', data.revenueTTM || 'N/A');
+        setElText('fProfitVal', data.netProfitTTM || 'N/A');
+        setElText('fFilingVal', data.filingDate || 'Annual Report FY24');
+    } catch (err) {
+        console.error('Fundamentals load error:', err);
+    }
+}
+
+// 4. Derivatives Controller
+function setupDerivativesController() {
+    const pills = document.querySelectorAll('#derivativesSymbolPicker .f-pill');
+    pills.forEach(p => {
+        p.addEventListener('click', () => {
+            pills.forEach(x => x.classList.remove('active'));
+            p.classList.add('active');
+            const sym = p.getAttribute('data-sym');
+            loadDerivativesData(sym);
+        });
+    });
+}
+
+async function loadDerivativesData(symbol) {
+    const tbody = document.getElementById('optionChainTableBody');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">Fetching option chain & Greeks...</td></tr>`;
+
+    try {
+        const res = await fetch(`/api/derivatives/${symbol}`);
+        const data = await res.json();
+        const base = data.category === 'IN' ? '₹' : '$';
+
+        setElText('derSpotPrice', `${base}${formatNumber(data.spotPrice)}`);
+        setElText('derPcrVal', data.pcr ? data.pcr.toFixed(2) : '1.00');
+        
+        const pcrEl = document.getElementById('derPcrSentiment');
+        if (pcrEl) {
+            pcrEl.textContent = data.pcrSentiment || 'NEUTRAL';
+            pcrEl.className = `val badge-tag ${data.pcrSentiment === 'BULLISH' ? 'badge-bull' : (data.pcrSentiment === 'BEARISH' ? 'badge-bear' : 'badge-purp')}`;
+        }
+        setElText('derMaxPainVal', `${base}${formatNumber(data.maxPain)}`);
+
+        if (tbody && data.strikes) {
+            tbody.innerHTML = data.strikes.map(s => `
+                <tr>
+                    <td style="font-family: var(--font-mono); color: var(--bullish-green);">${s.callDelta}</td>
+                    <td style="font-family: var(--font-mono);">${s.callTheta}</td>
+                    <td style="font-family: var(--font-mono); font-weight:600;">${base}${formatNumber(s.callLtp)}</td>
+                    <td style="font-family: var(--font-mono);">${formatNumber(s.callOi)}</td>
+                    <td class="strike-col">${base}${formatNumber(s.strike)}</td>
+                    <td style="font-family: var(--font-mono);">${formatNumber(s.putOi)}</td>
+                    <td style="font-family: var(--font-mono); font-weight:600;">${base}${formatNumber(s.putLtp)}</td>
+                    <td style="font-family: var(--font-mono);">${s.putTheta}</td>
+                    <td style="font-family: var(--font-mono); color: var(--bearish-red);">${s.putDelta}</td>
+                </tr>
+            `).join('');
+        }
+    } catch (err) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color: var(--bearish-red);">Error loading derivatives: ${err.message}</td></tr>`;
+    }
+}
+
+// 5. Backtest Controller
+function setupBacktestController() {
+    const form = document.getElementById('backtestForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const symbol = document.getElementById('btSymbol').value;
+        const strategy = document.getElementById('btStrategy').value;
+        const initialCapital = parseFloat(document.getElementById('btCapital').value) || 100000;
+        const riskPerTrade = parseFloat(document.getElementById('btRisk').value) || 1.0;
+
+        const submitBtn = form.querySelector('.submit-bt-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Simulating Quant Strategy...';
+
+        try {
+            const res = await fetch('/api/backtest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol, strategy, initialCapital, riskPerTrade })
+            });
+            const data = await res.json();
+            
+            const retClass = data.totalReturnPercent >= 0 ? 'text-green' : 'text-red';
+            const retSign = data.totalReturnPercent >= 0 ? '+' : '';
+            const cur = symbol === 'BTC' || symbol === 'ETH' || symbol === 'NVDA' ? '$' : '₹';
+
+            const retEl = document.getElementById('btReturnVal');
+            if (retEl) {
+                retEl.textContent = `${retSign}${data.totalReturnPercent}%`;
+                retEl.className = `val ${retClass}`;
+            }
+
+            setElText('btWinRateVal', `${data.winRatePercent}%`);
+            setElText('btProfitFactorVal', `${data.profitFactor}`);
+            setElText('btMaxDdVal', `-${data.maxDrawdownPercent}%`);
+            setElText('btTotalTradesVal', `${data.totalTrades}`);
+            setElText('btEndingCapVal', `${cur}${formatNumber(data.endingCapital)}`);
+
+            const tradeTable = document.getElementById('btTradeTableBody');
+            if (tradeTable) {
+                if (!data.trades || data.trades.length === 0) {
+                    tradeTable.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px;">No trades generated during this simulation period.</td></tr>`;
+                } else {
+                    tradeTable.innerHTML = data.trades.map((t, idx) => {
+                        const pnlClass = t.pnl >= 0 ? 'text-green' : 'text-red';
+                        const pnlSign = t.pnl >= 0 ? '+' : '';
+                        return `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td>${t.date ? new Date(t.date).toLocaleDateString() : 'Session'}</td>
+                                <td><span class="badge-tag ${t.type === 'LONG' ? 'badge-bull' : 'badge-bear'}">${t.type}</span></td>
+                                <td style="font-family: var(--font-mono);">${cur}${formatNumber(t.entryPrice)}</td>
+                                <td style="font-family: var(--font-mono);">${cur}${formatNumber(t.exitPrice)}</td>
+                                <td><small>${t.reason || 'TARGET'}</small></td>
+                                <td class="${pnlClass}" style="font-family: var(--font-mono); font-weight:700;">${pnlSign}${cur}${formatNumber(t.pnl)}</td>
+                                <td class="${pnlClass}" style="font-family: var(--font-mono);">${pnlSign}${t.pnlPercent}%</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            showToast(`Backtest complete! Return: ${retSign}${data.totalReturnPercent}%`);
+        } catch (err) {
+            showToast(`Backtest failed: ${err.message}`, true);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚀 Run Strategy Simulation';
+        }
+    });
+}
+
+// 6. Paper Trading Controller
+function setupPaperTradingController() {
+    const buyBtn = document.getElementById('ptBuyBtn');
+    const sellBtn = document.getElementById('ptSellBtn');
+    const resetBtn = document.getElementById('resetPaperTradingBtn');
+
+    if (buyBtn) buyBtn.addEventListener('click', () => placePaperOrder('BUY'));
+    if (sellBtn) sellBtn.addEventListener('click', () => placePaperOrder('SELL'));
+    if (resetBtn) resetBtn.addEventListener('click', resetPaperTradingAccount);
+}
+
+async function loadPaperTradingData() {
+    try {
+        const res = await fetch('/api/paper-trading/summary');
+        const data = await res.json();
+        
+        setElText('ptCashBalance', `₹${formatNumber(data.cashBalance)}`);
+        setElText('ptPositionsValue', `₹${formatNumber(data.positionsValue)}`);
+        setElText('ptTotalNetWorth', `₹${formatNumber(data.totalPortfolioValue)}`);
+        
+        const pnlEl = document.getElementById('ptRealizedPnl');
+        if (pnlEl) {
+            const isPos = data.realizedPnL >= 0;
+            pnlEl.textContent = `${isPos ? '+' : ''}₹${formatNumber(data.realizedPnL)}`;
+            pnlEl.className = `val ${isPos ? 'text-green' : 'text-red'}`;
+        }
+
+        const posBody = document.getElementById('ptPositionsTableBody');
+        if (posBody) {
+            if (!data.openPositions || data.openPositions.length === 0) {
+                posBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No open positions currently active.</td></tr>`;
+            } else {
+                posBody.innerHTML = data.openPositions.map(pos => {
+                    const pnlClass = pos.unrealizedPnL >= 0 ? 'text-green' : 'text-red';
+                    const pnlSign = pos.unrealizedPnL >= 0 ? '+' : '';
+                    return `
+                        <tr>
+                            <td><b>${pos.symbol}</b></td>
+                            <td>${pos.quantity}</td>
+                            <td style="font-family: var(--font-mono);">₹${formatNumber(pos.entryPrice)}</td>
+                            <td style="font-family: var(--font-mono);">₹${formatNumber(pos.currentPrice)}</td>
+                            <td class="${pnlClass}" style="font-family: var(--font-mono); font-weight:700;">${pnlSign}₹${formatNumber(pos.unrealizedPnL)}</td>
+                            <td>
+                                <button class="pill-btn timing-nav-btn" style="padding: 3px 8px; font-size: 0.72rem;" onclick="closePaperPosition('${pos.symbol}')">
+                                    Close
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        const orderBody = document.getElementById('ptOrderHistoryBody');
+        if (orderBody) {
+            if (!data.recentOrders || data.recentOrders.length === 0) {
+                orderBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:16px;">No recent orders recorded.</td></tr>`;
+            } else {
+                orderBody.innerHTML = data.recentOrders.slice(-10).reverse().map(ord => `
+                    <tr>
+                        <td>${new Date(ord.timestamp).toLocaleTimeString()}</td>
+                        <td><b>${ord.symbol}</b></td>
+                        <td><span class="badge-tag ${ord.side === 'BUY' ? 'badge-bull' : 'badge-bear'}">${ord.side}</span></td>
+                        <td>${ord.quantity}</td>
+                        <td style="font-family: var(--font-mono);">₹${formatNumber(ord.price)}</td>
+                        <td style="font-family: var(--font-mono);">₹${formatNumber(ord.price * ord.quantity)}</td>
+                        <td><span class="badge-tag badge-bull">FILLED</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+    } catch (err) {
+        console.error('Paper trading load error:', err);
+    }
+}
+
+async function placePaperOrder(side) {
+    const symbol = document.getElementById('ptOrderSymbol').value;
+    const type = document.getElementById('ptOrderType').value;
+    const quantity = parseInt(document.getElementById('ptOrderQty').value, 10) || 1;
+
+    try {
+        const res = await fetch('/api/paper-trading/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ symbol, side, type, quantity })
+        });
+        const result = await res.json();
+        if (result.success) {
+            showToast(`Order executed: ${side} ${quantity} ${symbol}`);
+            loadPaperTradingData();
+        } else {
+            showToast(`Order failed: ${result.message}`, true);
+        }
+    } catch (err) {
+        showToast(`Order error: ${err.message}`, true);
+    }
+}
+
+window.closePaperPosition = function(symbol) {
+    placePaperOrder('SELL');
+};
+
+async function resetPaperTradingAccount() {
+    if (!confirm('Are you sure you want to reset your virtual paper trading portfolio to ₹1,00,000?')) return;
+    try {
+        await fetch('/api/paper-trading/reset', { method: 'POST' });
+        showToast('Virtual paper portfolio successfully reset to ₹1,00,000.');
+        loadPaperTradingData();
+    } catch (err) {
+        showToast(`Reset error: ${err.message}`, true);
+    }
+}
+
+// 7. News & Calendar Controller
+async function setupNewsCalendarController() {
+    loadNewsCalendarData();
+}
+
+async function loadNewsCalendarData() {
+    const newsEl = document.getElementById('newsList');
+    const calEl = document.getElementById('calendarList');
+
+    try {
+        const res = await fetch('/api/news');
+        const data = await res.json();
+
+        if (newsEl && data.news) {
+            newsEl.innerHTML = data.news.map(n => `
+                <div class="news-item">
+                    <div class="news-headline">${n.headline}</div>
+                    <div class="news-meta">
+                        <span>🏷️ ${n.category}</span>
+                        <span>⏱️ ${n.time}</span>
+                        <span class="badge-tag ${n.impact === 'HIGH' ? 'badge-bear' : 'badge-purp'}">${n.impact} IMPACT</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        if (calEl && data.calendar) {
+            calEl.innerHTML = data.calendar.map(c => `
+                <div class="cal-item">
+                    <div>
+                        <div class="cal-event-title">${c.flag} ${c.event}</div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">${c.date} • Forecast: ${c.forecast} | Prev: ${c.previous}</div>
+                    </div>
+                    <span class="cal-impact-high">${c.impact}</span>
+                </div>
+            `).join('');
+        }
+    } catch (err) {
+        if (newsEl) newsEl.innerHTML = `<div style="color: var(--bearish-red);">Failed to load news: ${err.message}</div>`;
+    }
+}
+
+// 8. Watchlist & Alerts Controller
+let userWatchlist = JSON.parse(localStorage.getItem('vectivor_watchlist') || '["NIFTY50","BANKNIFTY","BTC","ETH","RELIANCE","NVDA"]');
+let userAlerts = JSON.parse(localStorage.getItem('vectivor_alerts') || '[]');
+
+function setupWatchlistController() {
+    renderWatchlistCards();
+    renderAlertsList();
+
+    const addBtn = document.getElementById('addWatchlistBtn');
+    const addInput = document.getElementById('addWatchlistInput');
+    const alertForm = document.getElementById('createAlertForm');
+
+    if (addBtn && addInput) {
+        addBtn.addEventListener('click', () => {
+            const sym = addInput.value.trim().toUpperCase();
+            if (sym && !userWatchlist.includes(sym)) {
+                userWatchlist.push(sym);
+                localStorage.setItem('vectivor_watchlist', JSON.stringify(userWatchlist));
+                addInput.value = '';
+                renderWatchlistCards();
+                showToast(`Added ${sym} to watchlist.`);
+            }
+        });
+    }
+
+    if (alertForm) {
+        alertForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const symbol = document.getElementById('alertSymbolInput').value.trim().toUpperCase();
+            const condition = document.getElementById('alertConditionSelect').value;
+            const targetPrice = parseFloat(document.getElementById('alertTargetPriceInput').value);
+
+            if (symbol && targetPrice) {
+                userAlerts.push({ id: Date.now(), symbol, condition, targetPrice, triggered: false });
+                localStorage.setItem('vectivor_alerts', JSON.stringify(userAlerts));
+                renderAlertsList();
+                showToast(`Alert created for ${symbol} when price is ${condition} ${targetPrice}`);
+                alertForm.reset();
+            }
+        });
+    }
+}
+
+function renderWatchlistCards() {
+    const grid = document.getElementById('watchlistItemsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = userWatchlist.map(sym => `
+        <div class="wl-card" onclick="analyzeFromScreener('${sym}')">
+            <div class="wl-head">
+                <span class="wl-symbol">${sym}</span>
+                <button class="pill-btn timing-nav-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="event.stopPropagation(); removeWatchlistItem('${sym}')">✕</button>
+            </div>
+            <div class="wl-price text-green">LTP Real-Time</div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary);">Click to open full terminal analysis ↗</div>
+        </div>
+    `).join('');
+}
+
+window.removeWatchlistItem = function(symbol) {
+    userWatchlist = userWatchlist.filter(s => s !== symbol);
+    localStorage.setItem('vectivor_watchlist', JSON.stringify(userWatchlist));
+    renderWatchlistCards();
+};
+
+function renderAlertsList() {
+    const list = document.getElementById('activeAlertsList');
+    if (!list) return;
+
+    if (userAlerts.length === 0) {
+        list.innerHTML = `<div class="no-alerts-msg">No active price alerts set.</div>`;
+        return;
+    }
+
+    list.innerHTML = userAlerts.map(a => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size:0.85rem;">
+            <div>
+                <b>${a.symbol}</b>: ${a.condition === 'ABOVE' ? '≥' : '≤'} ${formatNumber(a.targetPrice)}
+            </div>
+            <button class="pill-btn timing-nav-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="removePriceAlert(${a.id})">✕ Remove</button>
+        </div>
+    `).join('');
+}
+
+window.removePriceAlert = function(id) {
+    userAlerts = userAlerts.filter(a => a.id !== id);
+    localStorage.setItem('vectivor_alerts', JSON.stringify(userAlerts));
+    renderAlertsList();
+};

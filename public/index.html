@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vectivor - Quantitative Market Trajectory & Direction Terminal</title>
+    <title>Vectivor PRO MAX - Professional Market Terminal & Quant Analytics</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <link rel="stylesheet" href="style.css?v=5.0">
+    <link rel="stylesheet" href="style.css?v=6.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,9 +13,8 @@
 <body class="dark-theme">
     <!-- Top Live Ticker Tape -->
     <div class="ticker-tape-container">
-        <div class="ticker-badge">LIVE 🔴</div>
+        <div class="ticker-badge">VECTIVOR LIVE 🔴</div>
         <div class="ticker-track" id="tickerTrack">
-            <!-- Dynamic ticker items -->
             <span class="ticker-item">BTC: $80,300 <b class="up">+2.45%</b></span>
             <span class="ticker-item">ETH: $2,645 <b class="up">+3.12%</b></span>
             <span class="ticker-item">SOL: $174.20 <b class="up">+4.80%</b></span>
@@ -27,401 +26,937 @@
             <span class="ticker-item">NVDA: $210.96 <b class="up">+1.85%</b></span>
             <span class="ticker-item">NASDAQ: $18,450 <b class="up">+0.75%</b></span>
             <span class="ticker-item">GOLD: $2,735 <b class="up">+0.40%</b></span>
+            <span class="ticker-item">CRUDE: $74.20 <b class="down">-0.80%</b></span>
+            <span class="ticker-item">EUR/USD: 1.0850 <b class="up">+0.15%</b></span>
         </div>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="app-header">
-        <div class="logo-area">
-            <img src="logo.jpg" alt="Vectivor Logo" class="brand-logo-img">
-            <div>
-                <h1>VECTIVOR</h1>
-                <p class="tagline">Quantitative Trajectory & Statistical Direction Terminal</p>
+    <!-- Master Layout: Collapsible Sidebar + Terminal Workspace -->
+    <div class="terminal-shell">
+        <!-- Collapsible Left Navigation Sidebar -->
+        <aside class="terminal-sidebar" id="terminalSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <img src="logo.jpg" alt="Vectivor Logo" class="brand-logo-img">
+                    <div class="brand-text">
+                        <span class="brand-title">VECTIVOR</span>
+                        <span class="brand-badge">PRO MAX</span>
+                    </div>
+                </div>
+                <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">☰</button>
             </div>
-        </div>
 
-        <div class="header-actions">
-            <button id="marketHoursBtn" class="pill-btn timing-nav-btn">⏰ Market Timings & Sessions</button>
-            <div class="live-pulse" id="headerLivePulse">
-                <span class="dot"></span>
-                <span id="headerLiveText">Live Session: Active</span>
-            </div>
-            <button id="openMasterModalBtn" class="pill-btn master-ai-btn">🎓 Master AI Analysis (SMC & Multi-Confluence)</button>
-            <button id="customAnalyzeBtn" class="pill-btn primary-btn">+ Analyze Custom Asset</button>
-        </div>
-    </header>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="view-overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Terminal Overview</span>
+                </button>
+                <button class="nav-item" data-view="view-screener">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-label">Market Screener</span>
+                </button>
+                <button class="nav-item" data-view="view-fundamentals">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-label">Fundamentals</span>
+                </button>
+                <button class="nav-item" data-view="view-derivatives">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">Options & Greeks</span>
+                </button>
+                <button class="nav-item" data-view="view-backtest">
+                    <span class="nav-icon">🧪</span>
+                    <span class="nav-label">Strategy Backtest</span>
+                </button>
+                <button class="nav-item" data-view="view-papertrading">
+                    <span class="nav-icon">💼</span>
+                    <span class="nav-label">Paper Trading</span>
+                </button>
+                <button class="nav-item" data-view="view-newscalendar">
+                    <span class="nav-icon">📰</span>
+                    <span class="nav-label">News & Calendar</span>
+                </button>
+                <button class="nav-item" data-view="view-watchlist">
+                    <span class="nav-icon">⭐</span>
+                    <span class="nav-label">Watchlist & Alerts</span>
+                </button>
 
-    <!-- Main Container -->
-    <main class="main-layout">
-        <!-- Macro Market Pulse Banner (Overall Market Breadth) -->
-        <section class="macro-pulse-section">
-            <div class="macro-pulse-header">
-                <span class="pulse-title">⚡ REAL-TIME MACRO MARKET TRAJECTORY & BREADTH</span>
-                <span class="feed-status" id="feedStatusBadge">🟢 Connected to Binance & Yahoo Real-Time Exchanges</span>
+                <div class="nav-divider"></div>
+
+                <button class="nav-item master-highlight-nav" id="sidebarMasterAiBtn">
+                    <span class="nav-icon">🎓</span>
+                    <span class="nav-label">Master AI & SMC</span>
+                </button>
+                <button class="nav-item" id="sidebarMarketHoursBtn">
+                    <span class="nav-icon">⏰</span>
+                    <span class="nav-label">Market Sessions</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="engine-status">
+                    <span class="dot-pulse"></span>
+                    <div class="engine-info">
+                        <span class="engine-label">QUANT CORE</span>
+                        <span class="engine-state" id="sidebarStatusText">Engine Active</span>
+                    </div>
+                </div>
             </div>
-            <div class="macro-pulse-grid">
-                <div class="macro-card" id="macroIndiaCard">
-                    <div class="macro-head">
-                        <div class="m-title-row">
-                            <span class="m-flag">🇮🇳</span>
-                            <b>Indian Stock Market</b>
-                            <span class="session-pill" id="macroIndiaStatus">09:15–15:30 IST</span>
+        </aside>
+
+        <!-- Main Terminal Workspace -->
+        <div class="terminal-main-wrap">
+            <!-- Top Command & Action Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                    <div class="tagline-wrap">
+                        <span class="tagline-main">Analyze the Market. Understand the Risk.</span>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button id="marketHoursBtn" class="pill-btn timing-nav-btn">⏰ Sessions</button>
+                    <div class="live-pulse" id="headerLivePulse">
+                        <span class="dot"></span>
+                        <span id="headerLiveText">Live Session: Active</span>
+                    </div>
+                    <button id="openMasterModalBtn" class="pill-btn master-ai-btn">🎓 Master AI Analysis</button>
+                    <button id="customAnalyzeBtn" class="pill-btn primary-btn">+ Custom Asset</button>
+                </div>
+            </header>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 1: TERMINAL OVERVIEW (Default Core Dashboard)        -->
+            <!-- ======================================================== -->
+            <div class="terminal-view active" id="view-overview">
+                <!-- Macro Market Pulse Banner -->
+                <section class="macro-pulse-section">
+                    <div class="macro-pulse-header">
+                        <span class="pulse-title">⚡ REAL-TIME MACRO MARKET TRAJECTORY & BREADTH</span>
+                        <span class="feed-status" id="feedStatusBadge">🟢 Real-Time Institutional Exchanges</span>
+                    </div>
+                    <div class="macro-pulse-grid">
+                        <div class="macro-card" id="macroIndiaCard">
+                            <div class="macro-head">
+                                <div class="m-title-row">
+                                    <span class="m-flag">🇮🇳</span>
+                                    <b>Indian Stock Market</b>
+                                    <span class="session-pill" id="macroIndiaStatus">09:15–15:30 IST</span>
+                                </div>
+                                <span class="m-verdict neutral" id="macroIndiaVerdict">Calculating...</span>
+                            </div>
+                            <div class="macro-details" id="macroIndiaDetails">Nifty 50 & Bank Nifty Institutional Breadth</div>
                         </div>
-                        <span class="m-verdict neutral" id="macroIndiaVerdict">Calculating...</span>
-                    </div>
-                    <div class="macro-details" id="macroIndiaDetails">Nifty 50 & Bank Nifty Institutional Breadth</div>
-                </div>
 
-                <div class="macro-card" id="macroUsCard">
-                    <div class="macro-head">
-                        <div class="m-title-row">
-                            <span class="m-flag">🇺🇸</span>
-                            <b>US Wall Street</b>
-                            <span class="session-pill" id="macroUsStatus">19:00–01:30 IST</span>
+                        <div class="macro-card" id="macroUsCard">
+                            <div class="macro-head">
+                                <div class="m-title-row">
+                                    <span class="m-flag">🇺🇸</span>
+                                    <b>US Wall Street</b>
+                                    <span class="session-pill" id="macroUsStatus">19:00–01:30 IST</span>
+                                </div>
+                                <span class="m-verdict neutral" id="macroUsVerdict">Calculating...</span>
+                            </div>
+                            <div class="macro-details" id="macroUsDetails">NASDAQ & S&P 500 Global Tech Flow</div>
                         </div>
-                        <span class="m-verdict neutral" id="macroUsVerdict">Calculating...</span>
-                    </div>
-                    <div class="macro-details" id="macroUsDetails">NASDAQ & S&P 500 Global Tech Flow</div>
-                </div>
 
-                <div class="macro-card" id="macroCryptoCard">
-                    <div class="macro-head">
-                        <div class="m-title-row">
-                            <span class="m-flag">🪙</span>
-                            <b>Global Crypto Market</b>
-                            <span class="session-pill open" id="macroCryptoStatus">24/7 OPEN 🟢</span>
+                        <div class="macro-card" id="macroCryptoCard">
+                            <div class="macro-head">
+                                <div class="m-title-row">
+                                    <span class="m-flag">🪙</span>
+                                    <b>Global Crypto Market</b>
+                                    <span class="session-pill open" id="macroCryptoStatus">24/7 OPEN 🟢</span>
+                                </div>
+                                <span class="m-verdict neutral" id="macroCryptoVerdict">Calculating...</span>
+                            </div>
+                            <div class="macro-details" id="macroCryptoDetails">Bitcoin & Altcoin Momentum</div>
                         </div>
-                        <span class="m-verdict neutral" id="macroCryptoVerdict">Calculating...</span>
                     </div>
-                    <div class="macro-details" id="macroCryptoDetails">Bitcoin & Altcoin Momentum</div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <!-- Stock & Crypto Selection Bar -->
-        <section class="stock-selector-section">
-            <div class="selector-header">
-                <div class="selector-left">
-                    <span class="label">Filter By Asset Class:</span>
-                    <div class="category-tabs" id="marketCategoryTabs">
-                        <button class="cat-tab active" data-category="ALL">All Assets (90+)</button>
-                        <button class="cat-tab" data-category="IN">🇮🇳 Indian Market (40+)</button>
-                        <button class="cat-tab" data-category="US">🇺🇸 US Market (40+)</button>
-                        <button class="cat-tab crypto-highlight" data-category="CRYPTO">🪙 Crypto Coins (13+)</button>
-                        <button class="cat-tab" data-category="COMMODITY">🥇 Commodities</button>
-                        <button class="cat-tab" data-category="FOREX">💱 Forex Pairs</button>
+                <!-- Stock & Crypto Selection Bar -->
+                <section class="stock-selector-section">
+                    <div class="selector-header">
+                        <div class="selector-left">
+                            <span class="label">Asset Class:</span>
+                            <div class="category-tabs" id="marketCategoryTabs">
+                                <button class="cat-tab active" data-category="ALL">All Assets (90+)</button>
+                                <button class="cat-tab" data-category="IN">🇮🇳 Indian Market (40+)</button>
+                                <button class="cat-tab" data-category="US">🇺🇸 US Market (40+)</button>
+                                <button class="cat-tab crypto-highlight" data-category="CRYPTO">🪙 Crypto (13+)</button>
+                                <button class="cat-tab" data-category="COMMODITY">🥇 Commodities</button>
+                                <button class="cat-tab" data-category="FOREX">💱 Forex Pairs</button>
+                            </div>
+                        </div>
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Search (BTC, NVDA, NIFTY, AAPL, TCS)...">
+                        </div>
                     </div>
-                </div>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search (BTC, NVDA, NIFTY, AAPL, TCS)...">
-                </div>
-            </div>
-            <div class="quick-chips" id="quickChips">
-                <!-- Dynamically populated buttons -->
-            </div>
-        </section>
+                    <div class="quick-chips" id="quickChips"></div>
+                </section>
 
-        <!-- Current Stock Info & Verdict Section -->
-        <section class="hero-prediction-grid">
-            <!-- Main Prediction Card -->
-            <div class="card prediction-card" id="predictionCard">
-                <div class="prediction-header">
+                <!-- Current Stock Info & Verdict Section -->
+                <section class="hero-prediction-grid">
+                    <!-- Main Prediction Card -->
+                    <div class="card prediction-card" id="predictionCard">
+                        <div class="prediction-header">
+                            <div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px; flex-wrap: wrap;">
+                                    <span class="category-tag" id="stockSector">Digital Asset</span>
+                                    <span class="data-source-tag" id="dataSourceTag">🟢 Real-Time Exchange</span>
+                                </div>
+                                <h2 id="stockTitle">Bitcoin (BTC)</h2>
+                                <div class="price-row">
+                                    <span class="main-price" id="stockPrice">$80,120.00</span>
+                                    <span class="price-change up" id="stockChange">+1,420.00 (+1.82%)</span>
+                                </div>
+                            </div>
+                            <div class="direction-badge-container">
+                                <span class="direction-label">QUANTITATIVE FORECAST</span>
+                                <div class="big-verdict-badge bullish" id="verdictBadge">
+                                    <span class="arrow-icon" id="verdictArrow">↗</span>
+                                    <span id="verdictText">BULLISH - UPWARD TRAJECTORY ↗</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-body">
+                            <!-- Precision Speedometer Gauge Meter -->
+                            <div class="meter-box">
+                                <div class="gauge-container">
+                                    <svg viewBox="0 0 240 135" class="gauge-svg">
+                                        <defs>
+                                            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#ef4444" />
+                                                <stop offset="25%" stop-color="#f97316" />
+                                                <stop offset="50%" stop-color="#eab308" />
+                                                <stop offset="75%" stop-color="#84cc16" />
+                                                <stop offset="100%" stop-color="#10b981" />
+                                            </linearGradient>
+                                            <filter id="needleGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                                <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ffffff" flood-opacity="0.85"/>
+                                            </filter>
+                                        </defs>
+                                        <path d="M 25 125 A 95 95 0 0 1 215 125" fill="none" stroke="#162035" stroke-width="20" stroke-linecap="round" />
+                                        <path d="M 25 125 A 95 95 0 0 1 215 125" fill="none" stroke="url(#gaugeGrad)" stroke-width="18" stroke-linecap="round" />
+                                        <line x1="25" y1="125" x2="35" y2="125" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+                                        <line x1="120" y1="30" x2="120" y2="40" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+                                        <line x1="215" y1="125" x2="205" y2="125" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+                                        <g id="svgNeedleGroup" style="transform-origin: 120px 125px; transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1); transform: rotate(-55deg);">
+                                            <polygon points="116.5,125 123.5,125 120,38" fill="#ffffff" filter="url(#needleGlow)" />
+                                            <circle cx="120" cy="125" r="11" fill="#00ff66" stroke="#ffffff" stroke-width="3" />
+                                            <circle cx="120" cy="125" r="4" fill="#ffffff" />
+                                        </g>
+                                    </svg>
+                                </div>
+
+                                <div class="gauge-readout-card">
+                                    <div class="readout-primary bearish" id="gaugePrimaryText">76% Bullish Confidence</div>
+                                    <div class="readout-secondary" id="gaugeSubText">High Conviction Upward Trajectory</div>
+                                </div>
+
+                                <div class="meter-labels">
+                                    <span class="bearish-lbl">BEARISH (DOWN)</span>
+                                    <span class="neutral-lbl">RANGEBOUND</span>
+                                    <span class="bullish-lbl">BULLISH (UP)</span>
+                                </div>
+                            </div>
+
+                            <!-- Target & Stop Loss Summary -->
+                            <div class="levels-box">
+                                <div class="level-item target-item">
+                                    <div class="level-icon">🎯</div>
+                                    <div>
+                                        <span class="lbl">Primary Target (1.5x ATR)</span>
+                                        <b class="val" id="target1Val">₹25,050.00</b>
+                                    </div>
+                                </div>
+                                <div class="level-item target2-item">
+                                    <div class="level-icon">🚀</div>
+                                    <div>
+                                        <span class="lbl">Extended Target (2.8x ATR)</span>
+                                        <b class="val" id="target2Val">₹25,280.00</b>
+                                    </div>
+                                </div>
+                                <div class="level-item sl-item">
+                                    <div class="level-icon">🛡️</div>
+                                    <div>
+                                        <span class="lbl">Stop-Loss Safeguard (1.1x ATR)</span>
+                                        <b class="val" id="stopLossVal">₹24,680.00</b>
+                                    </div>
+                                </div>
+                                <div class="level-item rr-item">
+                                    <div class="level-icon">⚖️</div>
+                                    <div>
+                                        <span class="lbl">Risk-to-Reward Ratio</span>
+                                        <b class="val" id="riskRewardVal">1 : 2.2</b>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timing & Operational Strip -->
+                            <div class="timing-horizon-strip">
+                                <div class="th-strip-item">
+                                    <span class="th-icon">⏱️</span>
+                                    <div>
+                                        <span class="th-strip-lbl">Target 1 Horizon</span>
+                                        <b class="th-strip-val" id="thTarget1Eta">1 – 2 Trading Days</b>
+                                    </div>
+                                </div>
+                                <div class="th-strip-item">
+                                    <span class="th-icon">⏳</span>
+                                    <div>
+                                        <span class="th-strip-lbl">Target 2 Horizon</span>
+                                        <b class="th-strip-val" id="thTarget2Eta">3 – 5 Trading Days</b>
+                                    </div>
+                                </div>
+                                <div class="th-strip-item">
+                                    <span class="th-icon">🏛️</span>
+                                    <div>
+                                        <span class="th-strip-lbl">Market Session</span>
+                                        <b class="th-strip-val" id="thSessionStatus">Checking...</b>
+                                    </div>
+                                </div>
+                                <div class="th-strip-item">
+                                    <span class="th-icon">⚡</span>
+                                    <div>
+                                        <span class="th-strip-lbl">Best Entry Window</span>
+                                        <b class="th-strip-val" id="thEntryWindow">09:30 AM – 11:00 AM IST</b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Drivers & Confluence -->
+                        <div class="explanation-box">
+                            <div class="exp-title">
+                                <span>💡 Key Quantitative Drivers & Confluence Analysis:</span>
+                            </div>
+                            <ul class="reason-list" id="reasonsList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Sentiment & Institutional Pulse -->
+                    <div class="card sentiment-side-card">
+                        <h3>Institutional Market Sentiment</h3>
+                        <div class="fear-greed-widget">
+                            <div class="fg-header">
+                                <span>Fear & Greed Index</span>
+                                <b id="fgScore" class="fg-val">68 / 100</b>
+                            </div>
+                            <div class="fg-bar">
+                                <div class="fg-fill" id="fgFill" style="width: 68%;"></div>
+                            </div>
+                            <div class="fg-label" id="fgLabel">Greed (Bullish Sentiment)</div>
+                        </div>
+
+                        <h4 class="sub-sec-heading">Indicator Summary Signals</h4>
+                        <div class="mini-signals-list" id="miniSignalsList"></div>
+
+                        <div class="disclaimer-note">
+                            ⚠️ <b>Disclaimer:</b> All forecasts, target levels, and signals are generated using statistical and mathematical models. Always exercise disciplined risk management and execute with appropriate stop-loss orders.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Candlestick Chart Section -->
+                <section class="card chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <h3>Real-Time Candlestick Chart</h3>
+                            <p class="chart-sub">Includes 20 EMA (Cyan) and 50 EMA (Orange) Trend Moving Averages</p>
+                        </div>
+                        <div class="timeframe-buttons">
+                            <button class="tf-btn" data-tf="1D">1D</button>
+                            <button class="tf-btn" data-tf="1W">1W</button>
+                            <button class="tf-btn active" data-tf="1M">1M</button>
+                            <button class="tf-btn" data-tf="3M">3M</button>
+                            <button class="tf-btn" data-tf="1Y">1Y</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="marketChart" width="1100" height="380"></canvas>
+                        <div id="chartTooltip" class="chart-tooltip"></div>
+                    </div>
+
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="box green"></span> Bullish Candle</span>
+                        <span class="legend-item"><span class="box red"></span> Bearish Candle</span>
+                        <span class="legend-item"><span class="line cyan"></span> 20 EMA</span>
+                        <span class="legend-item"><span class="line orange"></span> 50 EMA</span>
+                    </div>
+                </section>
+
+                <!-- Detailed Technical Indicators Grid -->
+                <section class="indicators-section">
+                    <h3 class="section-title">Quantitative Indicators Deep-Dive</h3>
+                    <div class="indicators-grid">
+                        <!-- RSI Card -->
+                        <div class="card indicator-card">
+                            <div class="ind-head">
+                                <span class="ind-name">RSI (14 Wilder's)</span>
+                                <span class="ind-status" id="rsiStatus">Bullish</span>
+                            </div>
+                            <div class="ind-val" id="rsiVal">58.4</div>
+                            <div class="rsi-track">
+                                <div class="rsi-zone oversold-zone">OS &lt;30</div>
+                                <div class="rsi-zone neutral-zone">Neutral 30-70</div>
+                                <div class="rsi-zone overbought-zone">OB &gt;70</div>
+                                <div class="rsi-marker" id="rsiMarker" style="left: 58%;"></div>
+                            </div>
+                            <p class="ind-desc" id="rsiDesc">Relative Strength Index measures momentum and exhaustion.</p>
+                        </div>
+
+                        <!-- MACD Card -->
+                        <div class="card indicator-card">
+                            <div class="ind-head">
+                                <span class="ind-name">MACD (12, 26, 9)</span>
+                                <span class="ind-status" id="macdStatus">Crossover</span>
+                            </div>
+                            <div class="ind-val" id="macdVal">+14.20</div>
+                            <div class="stat-rows">
+                                <div class="stat-row"><span>MACD Line:</span> <b id="macdLineVal">28.4</b></div>
+                                <div class="stat-row"><span>Signal Line:</span> <b id="macdSignalVal">14.2</b></div>
+                                <div class="stat-row"><span>Histogram:</span> <b id="macdHistVal">+14.2</b></div>
+                            </div>
+                            <p class="ind-desc" id="macdDesc">Moving Average Convergence Divergence tracks trend strength.</p>
+                        </div>
+
+                        <!-- Moving Averages Card -->
+                        <div class="card indicator-card">
+                            <div class="ind-head">
+                                <span class="ind-name">Moving Averages (EMA)</span>
+                                <span class="ind-status" id="emaStatus">Golden Trend</span>
+                            </div>
+                            <div class="stat-rows mt-10">
+                                <div class="stat-row"><span>20 EMA (Short-Term):</span> <b id="ema20Val">₹24,710</b></div>
+                                <div class="stat-row"><span>50 EMA (Medium-Term):</span> <b id="ema50Val">₹24,420</b></div>
+                                <div class="stat-row"><span>200 EMA (Long-Term):</span> <b id="ema200Val">₹23,890</b></div>
+                            </div>
+                            <p class="ind-desc" id="emaDesc">Multi-timeframe moving average hierarchy.</p>
+                        </div>
+
+                        <!-- Bollinger Bands Card -->
+                        <div class="card indicator-card">
+                            <div class="ind-head">
+                                <span class="ind-name">Bollinger Bands (20, 2)</span>
+                                <span class="ind-status" id="bbStatus">Expanding</span>
+                            </div>
+                            <div class="stat-rows mt-10">
+                                <div class="stat-row"><span>Upper Band:</span> <b id="bbUpperVal">₹25,180</b></div>
+                                <div class="stat-row"><span>Middle Band:</span> <b id="bbMiddleVal">₹24,720</b></div>
+                                <div class="stat-row"><span>Lower Band:</span> <b id="bbLowerVal">₹24,260</b></div>
+                            </div>
+                            <p class="ind-desc" id="bbDesc">2-standard-deviation volatility boundaries.</p>
+                        </div>
+
+                        <!-- Pivot Points Card -->
+                        <div class="card indicator-card">
+                            <div class="ind-head">
+                                <span class="ind-name">Support & Resistance Levels</span>
+                                <span class="ind-status">Key Levels</span>
+                            </div>
+                            <div class="pivots-table">
+                                <div class="pivot-line r-level"><span>Resistance 2 (R2):</span> <b id="pivotR2">₹25,320</b></div>
+                                <div class="pivot-line r-level"><span>Resistance 1 (R1):</span> <b id="pivotR1">₹25,080</b></div>
+                                <div class="pivot-line pp-level"><span>Central Pivot (PP):</span> <b id="pivotPP">₹24,810</b></div>
+                                <div class="pivot-line s-level"><span>Support 1 (S1):</span> <b id="pivotS1">₹24,570</b></div>
+                                <div class="pivot-line s-level"><span>Support 2 (S2):</span> <b id="pivotS2">₹24,300</b></div>
+                            </div>
+                        </div>
+
+                        <!-- Actionable Strategy Card -->
+                        <div class="card indicator-card highlight-card">
+                            <div class="ind-head">
+                                <span class="ind-name">Execution Strategy & Plan</span>
+                                <span class="ind-status action-pill" id="actionPill">BUY</span>
+                            </div>
+                            <div class="strategy-summary" id="strategySummary">
+                                <b>Suggested Execution:</b> Accumulate on pullbacks.<br>
+                                <b>Entry Zone:</b> Near key EMA support.<br>
+                                <b>Risk Management:</b> Strict stop-loss required.
+                            </div>
+                            <div class="time-stamp" id="lastUpdated">Updated just now</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 2: REAL-TIME MARKET SCREENER                         -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-screener" style="display:none;">
+                <div class="view-header-bar">
                     <div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px; flex-wrap: wrap;">
-                            <span class="category-tag" id="stockSector">Digital Gold (Crypto)</span>
-                            <span class="data-source-tag" id="dataSourceTag">🟢 Binance Real-Time Exchange</span>
-                        </div>
-                        <h2 id="stockTitle">Bitcoin (BTC)</h2>
-                        <div class="price-row">
-                            <span class="main-price" id="stockPrice">$80,120.00</span>
-                            <span class="price-change up" id="stockChange">+1,420.00 (+1.82%)</span>
-                        </div>
+                        <h2>⚡ Multi-Asset Quantitative Screener</h2>
+                        <p class="view-sub">Real-time filtering for Top Gainers, Losers, Oversold RSI, and High RVOL Volume Breakouts</p>
                     </div>
-                    <div class="direction-badge-container">
-                        <span class="direction-label">QUANTITATIVE FORECAST</span>
-                        <div class="big-verdict-badge bullish" id="verdictBadge">
-                            <span class="arrow-icon" id="verdictArrow">↗</span>
-                            <span id="verdictText">BULLISH - UPWARD TRAJECTORY ↗</span>
-                        </div>
-                    </div>
+                    <button class="pill-btn primary-btn" id="refreshScreenerBtn">🔄 Refresh Screener</button>
                 </div>
 
-                <div class="verdict-body">
-                    <!-- Precision Speedometer Gauge Meter -->
-                    <div class="meter-box">
-                        <div class="gauge-container">
-                            <svg viewBox="0 0 240 135" class="gauge-svg">
-                                <defs>
-                                    <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#ef4444" />
-                                        <stop offset="25%" stop-color="#f97316" />
-                                        <stop offset="50%" stop-color="#eab308" />
-                                        <stop offset="75%" stop-color="#84cc16" />
-                                        <stop offset="100%" stop-color="#10b981" />
-                                    </linearGradient>
-                                    <filter id="needleGlow" x="-30%" y="-30%" width="160%" height="160%">
-                                        <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ffffff" flood-opacity="0.85"/>
-                                    </filter>
-                                </defs>
-                                <!-- Background Track -->
-                                <path d="M 25 125 A 95 95 0 0 1 215 125" fill="none" stroke="#162035" stroke-width="20" stroke-linecap="round" />
-                                <!-- Gradient Active Track (Full 180° Arc) -->
-                                <path d="M 25 125 A 95 95 0 0 1 215 125" fill="none" stroke="url(#gaugeGrad)" stroke-width="18" stroke-linecap="round" />
-                                
-                                <!-- Zone Markers -->
-                                <line x1="25" y1="125" x2="35" y2="125" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                                <line x1="120" y1="30" x2="120" y2="40" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                                <line x1="215" y1="125" x2="205" y2="125" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-
-                                <!-- Precision SVG Needle -->
-                                <g id="svgNeedleGroup" style="transform-origin: 120px 125px; transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1); transform: rotate(-55deg);">
-                                    <polygon points="116.5,125 123.5,125 120,38" fill="#ffffff" filter="url(#needleGlow)" />
-                                    <circle cx="120" cy="125" r="11" fill="#2563eb" stroke="#ffffff" stroke-width="3" />
-                                    <circle cx="120" cy="125" r="4" fill="#ffffff" />
-                                </g>
-                            </svg>
-                        </div>
-
-                        <!-- Dedicated Non-Overlapping Readout Box -->
-                        <div class="gauge-readout-card">
-                            <div class="readout-primary bearish" id="gaugePrimaryText">76% Bearish Confidence</div>
-                            <div class="readout-secondary" id="gaugeSubText">High Conviction Downward Trajectory</div>
-                        </div>
-
-                        <div class="meter-labels">
-                            <span class="bearish-lbl">BEARISH (DOWN)</span>
-                            <span class="neutral-lbl">RANGEBOUND</span>
-                            <span class="bullish-lbl">BULLISH (UP)</span>
-                        </div>
-                    </div>
-
-                    <!-- Target & Stop Loss Summary -->
-                    <div class="levels-box">
-                        <div class="level-item target-item">
-                            <div class="level-icon">🎯</div>
-                            <div>
-                                <span class="lbl">Primary Target (1.5x ATR)</span>
-                                <b class="val" id="target1Val">₹25,050.00</b>
-                            </div>
-                        </div>
-                        <div class="level-item target2-item">
-                            <div class="level-icon">🚀</div>
-                            <div>
-                                <span class="lbl">Extended Target (2.8x ATR)</span>
-                                <b class="val" id="target2Val">₹25,280.00</b>
-                            </div>
-                        </div>
-                        <div class="level-item sl-item">
-                            <div class="level-icon">🛡️</div>
-                            <div>
-                                <span class="lbl">Stop-Loss Safeguard (1.1x ATR)</span>
-                                <b class="val" id="stopLossVal">₹24,680.00</b>
-                            </div>
-                        </div>
-                        <div class="level-item rr-item">
-                            <div class="level-icon">⚖️</div>
-                            <div>
-                                <span class="lbl">Risk-to-Reward Ratio</span>
-                                <b class="val" id="riskRewardVal">1 : 2.2</b>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Forecast Horizon & Operational Session Card -->
-                    <div class="timing-horizon-strip">
-                        <div class="th-strip-item">
-                            <span class="th-icon">⏱️</span>
-                            <div>
-                                <span class="th-strip-lbl">Target 1 Horizon</span>
-                                <b class="th-strip-val" id="thTarget1Eta">1 – 2 Trading Days</b>
-                            </div>
-                        </div>
-                        <div class="th-strip-item">
-                            <span class="th-icon">⏳</span>
-                            <div>
-                                <span class="th-strip-lbl">Target 2 Horizon</span>
-                                <b class="th-strip-val" id="thTarget2Eta">3 – 5 Trading Days</b>
-                            </div>
-                        </div>
-                        <div class="th-strip-item">
-                            <span class="th-icon">🏛️</span>
-                            <div>
-                                <span class="th-strip-lbl">Market Session</span>
-                                <b class="th-strip-val" id="thSessionStatus">Checking...</b>
-                            </div>
-                        </div>
-                        <div class="th-strip-item">
-                            <span class="th-icon">⚡</span>
-                            <div>
-                                <span class="th-strip-lbl">Best Entry Window</span>
-                                <b class="th-strip-val" id="thEntryWindow">09:30 AM – 11:00 AM IST</b>
-                            </div>
-                        </div>
-                    </div>
+                <div class="screener-tabs-bar">
+                    <button class="screener-tab active" data-screener="gainers">🚀 Top Gainers</button>
+                    <button class="screener-tab" data-screener="losers">🔻 Top Losers</button>
+                    <button class="screener-tab" data-screener="rsiOversold">🟢 RSI Oversold (&lt;35)</button>
+                    <button class="screener-tab" data-screener="rsiOverbought">🔴 RSI Overbought (&gt;70)</button>
+                    <button class="screener-tab" data-screener="highVolume">⚡ High RVOL Volume</button>
                 </div>
 
-                <!-- Explanation / Reasoning -->
-                <div class="explanation-box">
-                    <div class="exp-title">
-                        <span>💡 Key Quantitative Drivers & Confluence Analysis:</span>
+                <div class="card screener-table-card">
+                    <div class="table-responsive">
+                        <table class="terminal-table" id="screenerTable">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Asset Name</th>
+                                    <th>Class</th>
+                                    <th>Price</th>
+                                    <th>Change %</th>
+                                    <th>RSI (14)</th>
+                                    <th>Trend Bias</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="screenerTableBody">
+                                <tr><td colspan="8" style="text-align:center; padding: 24px;">Scanning active universe...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <ul class="reason-list" id="reasonsList">
-                        <!-- Reasons populated dynamically -->
-                    </ul>
                 </div>
             </div>
 
-            <!-- Sentiment & Institutional Pulse -->
-            <div class="card sentiment-side-card">
-                <h3>Institutional Market Sentiment</h3>
-                
-                <!-- Fear & Greed -->
-                <div class="fear-greed-widget">
-                    <div class="fg-header">
-                        <span>Fear & Greed Index</span>
-                        <b id="fgScore" class="fg-val">68 / 100</b>
+            <!-- ======================================================== -->
+            <!-- VIEW 3: CORPORATE FUNDAMENTALS & VALUATION               -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-fundamentals" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>🏢 Corporate Fundamentals & Valuation Scorecard</h2>
+                        <p class="view-sub">Institutional financial health, P/E, P/B, EV/EBITDA, ROE, ROCE & Debt ratios</p>
                     </div>
-                    <div class="fg-bar">
-                        <div class="fg-fill" id="fgFill" style="width: 68%;"></div>
+                    <div class="symbol-quick-picker" id="fundamentalsSymbolPicker">
+                        <span class="label">Inspect:</span>
+                        <button class="f-pill active" data-sym="RELIANCE">RELIANCE</button>
+                        <button class="f-pill" data-sym="TCS">TCS</button>
+                        <button class="f-pill" data-sym="HDFCBANK">HDFCBANK</button>
+                        <button class="f-pill" data-sym="INFY">INFY</button>
+                        <button class="f-pill" data-sym="NVDA">NVDA</button>
+                        <button class="f-pill" data-sym="AAPL">AAPL</button>
+                        <button class="f-pill" data-sym="MSFT">MSFT</button>
                     </div>
-                    <div class="fg-label" id="fgLabel">Greed (Bullish Sentiment)</div>
                 </div>
 
-                <!-- Quick Signals Matrix -->
-                <h4 class="sub-sec-heading">Indicator Summary Signals</h4>
-                <div class="mini-signals-list" id="miniSignalsList">
-                    <!-- Dynamic mini signals -->
-                </div>
+                <div class="fundamentals-grid" id="fundamentalsContent">
+                    <div class="card f-card">
+                        <h3>📊 Valuation Multiples</h3>
+                        <div class="f-row"><span>Price-to-Earnings (P/E):</span> <b id="fPeVal">--</b></div>
+                        <div class="f-row"><span>Price-to-Book (P/B):</span> <b id="fPbVal">--</b></div>
+                        <div class="f-row"><span>EV / EBITDA:</span> <b id="fEvVal">--</b></div>
+                        <div class="f-row"><span>Dividend Yield:</span> <b id="fDivVal">--</b></div>
+                        <div class="f-row"><span>Valuation Status:</span> <b id="fValuationVal" class="badge-tag">--</b></div>
+                    </div>
 
-                <div class="disclaimer-note">
-                    ⚠️ <b>Disclaimer:</b> All forecasts, target levels, and signals are generated using statistical and mathematical models. Always exercise disciplined risk management and execute with appropriate stop-loss orders.
+                    <div class="card f-card">
+                        <h3>📈 Profitability & Returns</h3>
+                        <div class="f-row"><span>Return on Equity (ROE):</span> <b id="fRoeVal">--</b></div>
+                        <div class="f-row"><span>Return on Capital (ROCE):</span> <b id="fRoceVal">--</b></div>
+                        <div class="f-row"><span>Operating Margin:</span> <b id="fMarginVal">--</b></div>
+                        <div class="f-row"><span>Earnings Per Share (EPS):</span> <b id="fEpsVal">--</b></div>
+                        <div class="f-row"><span>Market Capitalization:</span> <b id="fMcapVal">--</b></div>
+                    </div>
+
+                    <div class="card f-card">
+                        <h3>🛡️ Financial Health & Debt</h3>
+                        <div class="f-row"><span>Debt-to-Equity:</span> <b id="fDebtVal">--</b></div>
+                        <div class="f-row"><span>Annual Revenue (TTM):</span> <b id="fRevVal">--</b></div>
+                        <div class="f-row"><span>Net Profit (TTM):</span> <b id="fProfitVal">--</b></div>
+                        <div class="f-row"><span>Latest Filing:</span> <b id="fFilingVal">--</b></div>
+                        <div class="f-row"><span>Integrity Verification:</span> <b class="badge-tag badge-bull">AUDITED METRICS</b></div>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Candlestick Chart Section -->
-        <section class="card chart-section">
-            <div class="chart-header">
-                <div>
-                    <h3>Real-Time Candlestick Chart</h3>
-                    <p class="chart-sub">Includes 20 EMA (Cyan) and 50 EMA (Orange) Trend Moving Averages</p>
-                </div>
-                <div class="timeframe-buttons">
-                    <button class="tf-btn" data-tf="1D">1D</button>
-                    <button class="tf-btn" data-tf="1W">1W</button>
-                    <button class="tf-btn active" data-tf="1M">1M</button>
-                    <button class="tf-btn" data-tf="3M">3M</button>
-                    <button class="tf-btn" data-tf="1Y">1Y</button>
-                </div>
-            </div>
-            
-            <div class="chart-canvas-wrapper">
-                <canvas id="marketChart" width="1100" height="380"></canvas>
-                <div id="chartTooltip" class="chart-tooltip"></div>
-            </div>
-
-            <div class="chart-legend">
-                <span class="legend-item"><span class="box green"></span> Bullish Candle (Green)</span>
-                <span class="legend-item"><span class="box red"></span> Bearish Candle (Red)</span>
-                <span class="legend-item"><span class="line cyan"></span> 20 EMA</span>
-                <span class="legend-item"><span class="line orange"></span> 50 EMA</span>
-            </div>
-        </section>
-
-        <!-- Detailed Technical Indicators Grid -->
-        <section class="indicators-section">
-            <h3 class="section-title">Quantitative Indicators Deep-Dive</h3>
-            <div class="indicators-grid">
-                <!-- RSI Card -->
-                <div class="card indicator-card">
-                    <div class="ind-head">
-                        <span class="ind-name">RSI (14)</span>
-                        <span class="ind-status" id="rsiStatus">Bullish</span>
+            <!-- ======================================================== -->
+            <!-- VIEW 4: OPTIONS CHAIN & DERIVATIVES GREEKS               -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-derivatives" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>📈 Options Chain & Black-Scholes Greeks Engine</h2>
+                        <p class="view-sub">Institutional Open Interest, Put-Call Ratio (PCR), Max Pain & Greeks (Delta, Gamma, Theta, Vega)</p>
                     </div>
-                    <div class="ind-val" id="rsiVal">58.4</div>
-                    <div class="rsi-track">
-                        <div class="rsi-zone oversold-zone">OS &lt;30</div>
-                        <div class="rsi-zone neutral-zone">Neutral 30-70</div>
-                        <div class="rsi-zone overbought-zone">OB &gt;70</div>
-                        <div class="rsi-marker" id="rsiMarker" style="left: 58%;"></div>
-                    </div>
-                    <p class="ind-desc" id="rsiDesc">Relative Strength Index measures momentum and exhaustion.</p>
-                </div>
-
-                <!-- MACD Card -->
-                <div class="card indicator-card">
-                    <div class="ind-head">
-                        <span class="ind-name">MACD (12, 26, 9)</span>
-                        <span class="ind-status" id="macdStatus">Crossover</span>
-                    </div>
-                    <div class="ind-val" id="macdVal">+14.20</div>
-                    <div class="stat-rows">
-                        <div class="stat-row"><span>MACD Line:</span> <b id="macdLineVal">28.4</b></div>
-                        <div class="stat-row"><span>Signal Line:</span> <b id="macdSignalVal">14.2</b></div>
-                        <div class="stat-row"><span>Histogram:</span> <b id="macdHistVal">+14.2</b></div>
-                    </div>
-                    <p class="ind-desc" id="macdDesc">Moving Average Convergence Divergence tracks trend strength and momentum shift.</p>
-                </div>
-
-                <!-- Moving Averages Card -->
-                <div class="card indicator-card">
-                    <div class="ind-head">
-                        <span class="ind-name">Moving Averages (EMA)</span>
-                        <span class="ind-status" id="emaStatus">Golden Trend</span>
-                    </div>
-                    <div class="stat-rows mt-10">
-                        <div class="stat-row"><span>20 EMA (Short-Term):</span> <b id="ema20Val">₹24,710</b></div>
-                        <div class="stat-row"><span>50 EMA (Medium-Term):</span> <b id="ema50Val">₹24,420</b></div>
-                        <div class="stat-row"><span>200 EMA (Long-Term):</span> <b id="ema200Val">₹23,890</b></div>
-                    </div>
-                    <p class="ind-desc" id="emaDesc">Evaluates multi-timeframe moving average hierarchy and alignment.</p>
-                </div>
-
-                <!-- Bollinger Bands Card -->
-                <div class="card indicator-card">
-                    <div class="ind-head">
-                        <span class="ind-name">Bollinger Bands (20, 2)</span>
-                        <span class="ind-status" id="bbStatus">Expanding</span>
-                    </div>
-                    <div class="stat-rows mt-10">
-                        <div class="stat-row"><span>Upper Band:</span> <b id="bbUpperVal">₹25,180</b></div>
-                        <div class="stat-row"><span>Middle Band:</span> <b id="bbMiddleVal">₹24,720</b></div>
-                        <div class="stat-row"><span>Lower Band:</span> <b id="bbLowerVal">₹24,260</b></div>
-                    </div>
-                    <p class="ind-desc" id="bbDesc">Identifies 2-standard-deviation volatility boundaries and mean-reversion points.</p>
-                </div>
-
-                <!-- Pivot Points Card -->
-                <div class="card indicator-card">
-                    <div class="ind-head">
-                        <span class="ind-name">Support & Resistance Levels</span>
-                        <span class="ind-status">Key Levels</span>
-                    </div>
-                    <div class="pivots-table">
-                        <div class="pivot-line r-level"><span>Resistance 2 (R2):</span> <b id="pivotR2">₹25,320</b></div>
-                        <div class="pivot-line r-level"><span>Resistance 1 (R1):</span> <b id="pivotR1">₹25,080</b></div>
-                        <div class="pivot-line pp-level"><span>Central Pivot (PP):</span> <b id="pivotPP">₹24,810</b></div>
-                        <div class="pivot-line s-level"><span>Support 1 (S1):</span> <b id="pivotS1">₹24,570</b></div>
-                        <div class="pivot-line s-level"><span>Support 2 (S2):</span> <b id="pivotS2">₹24,300</b></div>
+                    <div class="symbol-quick-picker" id="derivativesSymbolPicker">
+                        <button class="f-pill active" data-sym="NIFTY50">NIFTY 50</button>
+                        <button class="f-pill" data-sym="BANKNIFTY">BANK NIFTY</button>
+                        <button class="f-pill" data-sym="RELIANCE">RELIANCE</button>
+                        <button class="f-pill" data-sym="BTC">BTC</button>
                     </div>
                 </div>
 
-                <!-- Actionable Strategy Card -->
-                <div class="card indicator-card highlight-card">
-                    <div class="ind-head">
-                        <span class="ind-name">Execution Strategy & Plan</span>
-                        <span class="ind-status action-pill" id="actionPill">BUY</span>
+                <!-- Derivatives Summary Cards -->
+                <div class="derivatives-summary-grid">
+                    <div class="card summary-card">
+                        <span class="lbl">Spot Price</span>
+                        <b class="val text-green" id="derSpotPrice">--</b>
                     </div>
-                    <div class="strategy-summary" id="strategySummary">
-                        <b>Suggested Execution:</b> Accumulate on pullbacks.<br>
-                        <b>Entry Zone:</b> Near key EMA support.<br>
-                        <b>Risk Management:</b> Strict stop-loss required.
+                    <div class="card summary-card">
+                        <span class="lbl">Put-Call Ratio (PCR)</span>
+                        <b class="val text-gold" id="derPcrVal">--</b>
                     </div>
-                    <div class="time-stamp" id="lastUpdated">Updated just now</div>
+                    <div class="card summary-card">
+                        <span class="lbl">PCR Sentiment</span>
+                        <b class="val badge-tag" id="derPcrSentiment">--</b>
+                    </div>
+                    <div class="card summary-card">
+                        <span class="lbl">Max Pain Strike</span>
+                        <b class="val text-red" id="derMaxPainVal">--</b>
+                    </div>
+                </div>
+
+                <!-- Option Chain Table -->
+                <div class="card table-card" style="margin-top: 18px;">
+                    <div class="table-responsive">
+                        <table class="terminal-table option-chain-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" class="call-head">CALL OPTIONS (BULLISH)</th>
+                                    <th class="strike-head">STRIKE</th>
+                                    <th colspan="4" class="put-head">PUT OPTIONS (BEARISH)</th>
+                                </tr>
+                                <tr>
+                                    <th>Delta</th>
+                                    <th>Theta</th>
+                                    <th>LTP</th>
+                                    <th>OI</th>
+                                    <th class="strike-col">Strike Price</th>
+                                    <th>OI</th>
+                                    <th>LTP</th>
+                                    <th>Theta</th>
+                                    <th>Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="optionChainTableBody">
+                                <tr><td colspan="9" style="text-align:center; padding:20px;">Loading option chain...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 5: QUANTITATIVE STRATEGY BACKTESTER                 -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-backtest" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>🧪 Quantitative Strategy Backtester Lab</h2>
+                        <p class="view-sub">Zero-lookahead backtesting engine with realistic slippage, fee deduction, and equity curve</p>
+                    </div>
+                </div>
+
+                <div class="backtest-controls-card card">
+                    <form id="backtestForm" class="backtest-form">
+                        <div class="bt-form-row">
+                            <div class="form-group">
+                                <label>Asset Symbol:</label>
+                                <select id="btSymbol" class="form-select">
+                                    <option value="NIFTY50">NIFTY 50</option>
+                                    <option value="BANKNIFTY">BANK NIFTY</option>
+                                    <option value="BTC">Bitcoin (BTC)</option>
+                                    <option value="ETH">Ethereum (ETH)</option>
+                                    <option value="RELIANCE">RELIANCE</option>
+                                    <option value="TCS">TCS</option>
+                                    <option value="NVDA">NVIDIA (NVDA)</option>
+                                    <option value="GOLD">Gold (XAU)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantitative Strategy:</label>
+                                <select id="btStrategy" class="form-select">
+                                    <option value="ema_cross">9 / 21 EMA Golden Momentum Cross</option>
+                                    <option value="rsi_reversal">RSI 14 Mean-Reversion Oversold (&lt;30)</option>
+                                    <option value="range_breakout">20-Bar Structural Range Breakout</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Initial Capital:</label>
+                                <input type="number" id="btCapital" value="100000" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Risk Per Trade (%):</label>
+                                <input type="number" id="btRisk" value="1.0" step="0.1" min="0.5" max="5.0" class="form-input">
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button type="submit" class="pill-btn primary-btn submit-bt-btn">🚀 Run Strategy Simulation</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Backtest Results Scorecard -->
+                <div class="backtest-metrics-grid" id="btMetricsGrid">
+                    <div class="card metric-card">
+                        <span class="lbl">Total Net Return</span>
+                        <b class="val text-green" id="btReturnVal">+14.2%</b>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="lbl">Win Rate</span>
+                        <b class="val text-gold" id="btWinRateVal">58.3%</b>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="lbl">Profit Factor</span>
+                        <b class="val" id="btProfitFactorVal">1.84</b>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="lbl">Max Drawdown</span>
+                        <b class="val text-red" id="btMaxDdVal">-4.2%</b>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="lbl">Total Trades</span>
+                        <b class="val" id="btTotalTradesVal">24</b>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="lbl">Ending Capital</span>
+                        <b class="val text-green" id="btEndingCapVal">₹1,14,200</b>
+                    </div>
+                </div>
+
+                <!-- Detailed Trade Log -->
+                <div class="card table-card" style="margin-top: 18px;">
+                    <h3>📋 Strategy Execution Ledger (Recent Trades)</h3>
+                    <div class="table-responsive">
+                        <table class="terminal-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Entry Price</th>
+                                    <th>Exit Price</th>
+                                    <th>Exit Reason</th>
+                                    <th>P&amp;L (₹ / $)</th>
+                                    <th>Return %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="btTradeTableBody">
+                                <tr><td colspan="8" style="text-align:center; padding:18px;">Run a backtest above to view trade-by-trade ledger.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 6: PAPER TRADING SIMULATOR                          -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-papertrading" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>💼 Real-Time Paper Trading Terminal</h2>
+                        <p class="view-sub">Practice risk-free institutional execution with real live market prices and order book emulation</p>
+                    </div>
+                    <button class="pill-btn timing-nav-btn" id="resetPaperTradingBtn">⚠️ Reset Virtual Portfolio</button>
+                </div>
+
+                <!-- Account Summary Grid -->
+                <div class="paper-summary-grid">
+                    <div class="card summary-card">
+                        <span class="lbl">Virtual Cash Balance</span>
+                        <b class="val text-gold" id="ptCashBalance">₹1,00,000.00</b>
+                    </div>
+                    <div class="card summary-card">
+                        <span class="lbl">Open Positions Value</span>
+                        <b class="val" id="ptPositionsValue">₹0.00</b>
+                    </div>
+                    <div class="card summary-card">
+                        <span class="lbl">Total Portfolio Net Worth</span>
+                        <b class="val text-green" id="ptTotalNetWorth">₹1,00,000.00</b>
+                    </div>
+                    <div class="card summary-card">
+                        <span class="lbl">Realized P&amp;L</span>
+                        <b class="val" id="ptRealizedPnl">₹0.00</b>
+                    </div>
+                </div>
+
+                <div class="paper-trading-workspace">
+                    <!-- Order Execution Card -->
+                    <div class="card order-execution-card">
+                        <h3>⚡ Place Virtual Order</h3>
+                        <form id="paperOrderForm" class="paper-form">
+                            <div class="form-group">
+                                <label>Symbol:</label>
+                                <select id="ptOrderSymbol" class="form-select">
+                                    <option value="NIFTY50">NIFTY 50</option>
+                                    <option value="BANKNIFTY">BANK NIFTY</option>
+                                    <option value="BTC">Bitcoin (BTC)</option>
+                                    <option value="ETH">Ethereum (ETH)</option>
+                                    <option value="RELIANCE">RELIANCE</option>
+                                    <option value="TCS">TCS</option>
+                                    <option value="NVDA">NVIDIA (NVDA)</option>
+                                    <option value="GOLD">Gold (XAU)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Order Type:</label>
+                                <select id="ptOrderType" class="form-select">
+                                    <option value="MARKET">Market Execution (LTP)</option>
+                                    <option value="LIMIT">Limit Order</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity / Shares:</label>
+                                <input type="number" id="ptOrderQty" value="10" min="1" class="form-input">
+                            </div>
+                            <div class="order-buttons-row">
+                                <button type="button" class="btn-buy" id="ptBuyBtn">BUY (LONG)</button>
+                                <button type="button" class="btn-sell" id="ptSellBtn">SELL (SHORT)</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Active Positions Table -->
+                    <div class="card positions-card">
+                        <h3>📊 Open Positions</h3>
+                        <div class="table-responsive">
+                            <table class="terminal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Qty</th>
+                                        <th>Avg Price</th>
+                                        <th>Current Price</th>
+                                        <th>Unrealized P&amp;L</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ptPositionsTableBody">
+                                    <tr><td colspan="6" style="text-align:center; padding: 20px;">No open positions currently active.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Order Ledger -->
+                <div class="card table-card" style="margin-top: 18px;">
+                    <h3>📜 Order History Ledger</h3>
+                    <div class="table-responsive">
+                        <table class="terminal-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Symbol</th>
+                                    <th>Side</th>
+                                    <th>Qty</th>
+                                    <th>Executed Price</th>
+                                    <th>Total Value</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ptOrderHistoryBody">
+                                <tr><td colspan="7" style="text-align:center; padding:16px;">No recent orders recorded.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 7: NEWS & ECONOMIC CALENDAR                         -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-newscalendar" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>📰 Real-Time Financial Intelligence & Economic Calendar</h2>
+                        <p class="view-sub">Market-moving headlines and high-impact macro releases (CPI, Interest Rates, Non-Farm Payrolls, GDP)</p>
+                    </div>
+                </div>
+
+                <div class="news-calendar-grid">
+                    <!-- News Feed Column -->
+                    <div class="card news-feed-card">
+                        <h3>⚡ Breaking Market Headlines</h3>
+                        <div class="news-list" id="newsList">
+                            <div class="loading-state">Fetching real-time intelligence feeds...</div>
+                        </div>
+                    </div>
+
+                    <!-- Economic Calendar Column -->
+                    <div class="card calendar-card">
+                        <h3>📅 Official Economic Calendar</h3>
+                        <div class="calendar-list" id="calendarList">
+                            <div class="loading-state">Loading upcoming economic events...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- VIEW 8: WATCHLIST & CUSTOM ALERTS                        -->
+            <!-- ======================================================== -->
+            <div class="terminal-view" id="view-watchlist" style="display:none;">
+                <div class="view-header-bar">
+                    <div>
+                        <h2>⭐ Personalized Watchlist & Real-Time Price Alerts</h2>
+                        <p class="view-sub">Track your favorite instruments and receive browser alerts on price breakout levels</p>
+                    </div>
+                </div>
+
+                <div class="watchlist-workspace">
+                    <!-- Watchlist Manager Card -->
+                    <div class="card watchlist-manager-card">
+                        <div class="wl-add-bar">
+                            <input type="text" id="addWatchlistInput" placeholder="Add symbol (e.g. TATAMOTORS, SOL, AAPL)..." class="form-input">
+                            <button class="pill-btn primary-btn" id="addWatchlistBtn">+ Add Asset</button>
+                        </div>
+                        <div class="watchlist-items-grid" id="watchlistItemsGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Custom Price Alerts Card -->
+                    <div class="card alerts-card">
+                        <h3>🔔 Create Real-Time Price Alert</h3>
+                        <form id="createAlertForm" class="alert-form">
+                            <div class="form-group">
+                                <label>Target Asset Symbol:</label>
+                                <input type="text" id="alertSymbolInput" placeholder="e.g. NIFTY50, BTC, RELIANCE" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Trigger Condition:</label>
+                                <select id="alertConditionSelect" class="form-select">
+                                    <option value="ABOVE">Price Rises Above (&gt;=)</option>
+                                    <option value="BELOW">Price Drops Below (&lt;=)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Price Level:</label>
+                                <input type="number" step="0.01" id="alertTargetPriceInput" placeholder="e.g. 23000" class="form-input" required>
+                            </div>
+                            <button type="submit" class="pill-btn primary-btn" style="width: 100%;">Set Price Alert</button>
+                        </form>
+
+                        <div class="active-alerts-section">
+                            <h4>Active Alerts</h4>
+                            <div class="active-alerts-list" id="activeAlertsList">
+                                <div class="no-alerts-msg">No active price alerts set.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <p>Vectivor PRO MAX &copy; 2026 • Quantitative Market Trajectory & Directional Analytics Platform • Professional Market Intelligence</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALS                                                   -->
+    <!-- ======================================================== -->
 
     <!-- Custom Stock Modal -->
     <div class="modal-overlay" id="customModal">
@@ -465,7 +1000,6 @@
                 </div>
             </div>
 
-            <!-- Navigation Tabs Bar -->
             <div class="master-tabs-bar" id="masterTabsBar">
                 <button class="m-tab-btn active" data-tab="tabOverview">🌐 1. Overview & Verification</button>
                 <button class="m-tab-btn" data-tab="tabStructure">🧱 2. Price Action & Structure</button>
@@ -609,9 +1143,7 @@
 
                     <div class="hindi-edu-box">
                         <h4>🛡️ Professional Risk Management & Position Sizing Framework</h4>
-                        <ul id="mRiskRulesList">
-                            <!-- Populated dynamically -->
-                        </ul>
+                        <ul id="mRiskRulesList"></ul>
                         <div class="formula-card">
                             📐 Position Sizing Formula: Shares/Contracts = (Total Capital × 1%) ÷ (Entry Price - Stop Loss Price)
                         </div>
@@ -620,9 +1152,7 @@
 
                 <!-- Panel 6: हिंदी AI Masterclass -->
                 <div class="m-panel" id="tabClassroom">
-                    <div class="hindi-edu-box" id="mHindiClassroomContent">
-                        <!-- Populated dynamically with full in-depth Hindi lessons -->
-                    </div>
+                    <div class="hindi-edu-box" id="mHindiClassroomContent"></div>
                 </div>
             </div>
         </div>
@@ -643,7 +1173,6 @@
             </div>
             
             <div class="hours-modal-body">
-                <!-- Live Clocks Row -->
                 <div class="clocks-grid">
                     <div class="clock-card" id="istClockCard">
                         <span class="clock-flag">🇮🇳</span>
@@ -671,7 +1200,6 @@
                     </div>
                 </div>
 
-                <!-- Schedule Tables -->
                 <h4 class="hours-subheading">Exchange Operational Hours</h4>
                 <div class="schedule-table-wrap">
                     <table class="schedule-table">
@@ -719,44 +1247,13 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Forecast Horizon Explanation -->
-                <h4 class="hours-subheading" style="margin-top:20px;">Vectivor Target Forecast Horizons & Timelines</h4>
-                <div class="horizon-explain-grid">
-                    <div class="horizon-card target1-box">
-                        <div class="h-icon">🎯</div>
-                        <div class="h-content">
-                            <b>Primary Target (1.5x ATR)</b>
-                            <span class="h-eta">Expected ETA: 1 – 2 Trading Days</span>
-                            <p>Calculated using 14-period Average True Range volatility. High-probability swing level for quick momentum take-profit.</p>
-                        </div>
-                    </div>
-                    <div class="horizon-card target2-box">
-                        <div class="h-icon">🚀</div>
-                        <div class="h-content">
-                            <b>Extended Target (2.8x ATR)</b>
-                            <span class="h-eta">Expected ETA: 3 – 5 Trading Days</span>
-                            <p>Designed for multi-session trending continuation. Trail your stop-loss to breakeven once Primary Target is reached.</p>
-                        </div>
-                    </div>
-                    <div class="horizon-card sl-box">
-                        <div class="h-icon">🛡️</div>
-                        <div class="h-content">
-                            <b>Invalidation / Stop-Loss Safeguard (1.1x ATR)</b>
-                            <span class="h-eta">Immediate Invalidation</span>
-                            <p>If the asset price breaches this barrier at any point during market hours, the directional setup is immediately invalidated.</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-        <p>Vectivor &copy; 2026 • Quantitative Market Trajectory & Directional Analytics Platform • Professional Market Intelligence</p>
-    </footer>
+    <!-- Toast Notification Element -->
+    <div id="terminalToast" class="terminal-toast"></div>
 
-    <script src="app.js?v=5.0"></script>
+    <script src="app.js?v=6.0"></script>
 </body>
 </html>
